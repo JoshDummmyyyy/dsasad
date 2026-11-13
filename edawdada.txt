@@ -862,8 +862,8 @@ end
 local function ComputeUIScale()
     local dp = EstimateDeviceDP()
     if not dp or dp <= 0 then dp = REFERENCE_DP_WIDTH end
-    -- MODIFIED: Default scale is now 50% (0.5x) to fit smaller screens
-    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0) * 0.5
+    -- MODIFIED: Default scale is now 42.5% (50% * 0.85 = 42.5%) - this becomes the new 100% baseline
+    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0) * 0.425
 end
 
 -- ============================================================
@@ -2876,9 +2876,10 @@ function Library:CreateWindow(options)
 
     -- IDLE FRAME FX: only frames / outlines animate (corner brackets breathe, edge scanners sweep).
     -- Nothing here moves the window or its content; it rides MainFrame so it follows drags.
+    -- MODIFIED: Corner brackets hidden per user request
     do
         local IdleFX = Create("Frame", { Name = "IdleFX", Parent = MainFrame, BackgroundTransparency = 1, BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 1, 0), Active = false, ZIndex = 40 })
+            Size = UDim2.new(1, 0, 1, 0), Active = false, ZIndex = 40, Visible = false }) -- HIDDEN: Corner elements removed
         local corners = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 } }
         for i, c in ipairs(corners) do
             local ax, ay = c[1], c[2]
@@ -3293,7 +3294,7 @@ function Library:CreateWindow(options)
 
         local CfgBtn = Create("TextButton", { Name = "QuickConfigButton", Parent = TopBar, Text = "Config",
             Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = CardColor,
-            Size = UDim2.new(0, 70, 0, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -175, 0.5, 0),
+            Size = UDim2.new(0, 70, 0, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -60, 0.5, 0), -- MOVED: Closer to settings
             AutoButtonColor = false, ZIndex = 3, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd })
         Create("UICorner", { Parent = CfgBtn, CornerRadius = UDim.new(0, 13) })
         Create("UIPadding", { Parent = CfgBtn, PaddingLeft = UDim.new(0, 11), PaddingRight = UDim.new(0, 22) })
@@ -3709,7 +3710,7 @@ function Library:CreateWindow(options)
         local YEL_A, YEL_B = Color3.fromRGB(255, 214, 74), Color3.fromRGB(255, 160, 40)
         local Lock = Create("TextButton", { Name = "WindowLockButton", Parent = TopBar, Text = "", AutoButtonColor = false,
             BackgroundColor3 = Color3.fromRGB(58, 60, 70), Size = UDim2.new(0, 18, 0, 18), AnchorPoint = Vector2.new(0, 0.5),
-            Position = UDim2.new(0, 0, 0.5, 0), ZIndex = 3, BorderSizePixel = 0 })
+            Position = UDim2.new(0, 0, 0.5, 0), ZIndex = 3, BorderSizePixel = 0, Visible = false }) -- HIDDEN per user request
         Create("UICorner", { Parent = Lock, CornerRadius = UDim.new(0, 5) })
         Create("UIGradient", { Parent = Lock, Rotation = 90, Color = ColorSequence.new(Color3.fromRGB(150, 152, 165), Color3.fromRGB(95, 97, 110)) })
         local Stroke = Create("UIStroke", { Parent = Lock, Color = Color3.new(1, 1, 1), Thickness = 1.2, Transparency = 0.35, ApplyStrokeMode = Enum.ApplyStrokeMode.Border })
@@ -10303,7 +10304,7 @@ end
         function TabConfig:CreatePage(pageName)
             pageName = tostring(pageName or "Page")
             local existingPageCount = #TabConfig.Pages
-            local pageBtnWidth = math.max(40, MeasureTextWidth(pageName, Enum.Font.FredokaOne, 13) + 26)
+            local pageBtnWidth = math.max(40, MeasureTextWidth(pageName, Enum.Font.GothamBold, 13) + 26) -- FONT CHANGE: Match Player tab
             if existingPageCount > 0 then
                 -- Minimal dot divider replaces the old ">" glyph.
                 local sepHolder = Create("Frame", {
@@ -10320,7 +10321,7 @@ end
             end
             -- Segmented "pill" page chip. The pill fill/border follow the existing
             -- Highlight tween (size + transparency), so activation logic is untouched.
-            local PageBtn = Create("TextButton",{Parent=PageNav,Text=pageName,Font=Enum.Font.FredokaOne,
+            local PageBtn = Create("TextButton",{Parent=PageNav,Text=pageName,Font=Enum.Font.GothamBold, -- FONT CHANGE: Match Player tab
                 TextSize=13,TextScaled=true,TextColor3=SubTextColor,BackgroundColor3=Color3.fromRGB(66,68,78),
                 BackgroundTransparency=1,AutoButtonColor=false,
                 Size=UDim2.new(0,pageBtnWidth,0,26),LayoutOrder=existingPageCount * 2 + 1})
@@ -10466,7 +10467,7 @@ end
                     Size=UDim2.new(0,3,0,12),AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,8,0.5,0)})
                 Create("UICorner",{Parent=TitleNotch,CornerRadius=UDim.new(1,0)})
                 Create("UIGradient",{Parent=TitleNotch,Rotation=90,Color=ColorSequence.new(AccentColor,Color3.fromRGB(110,72,210))})
-                local TitleText = Create("TextLabel",{Name="SectionTitle",Parent=TitleBar,Text=sectionName,Font=Enum.Font.FredokaOne,
+                local TitleText = Create("TextLabel",{Name="SectionTitle",Parent=TitleBar,Text=sectionName,Font=Enum.Font.GothamBold, -- FONT CHANGE: Match Player tab
                     TextSize=13,TextScaled=true,TextColor3=Color3.fromRGB(240,234,255),BackgroundTransparency=1,
                     Size=UDim2.new(1,-52,0,16),Position=UDim2.new(0,18,0.5,-8),
                     TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd})
