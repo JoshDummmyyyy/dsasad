@@ -862,8 +862,8 @@ end
 local function ComputeUIScale()
     local dp = EstimateDeviceDP()
     if not dp or dp <= 0 then dp = REFERENCE_DP_WIDTH end
-    -- MODIFIED: Default scale is now 42.5% (50% * 0.85 = 42.5%) - this becomes the new 100% baseline
-    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0) * 0.425
+    -- MODIFIED: Default scale is now 32% (40% * 0.8 = 32%) - this becomes the new 100% baseline
+    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0) * 0.32
 end
 
 -- ============================================================
@@ -2552,7 +2552,7 @@ function Library:CreateWindow(options)
     Create("TextLabel",{Parent=InfoCard,Text="FEATURE INFO",Font=Enum.Font.Michroma,TextSize=8,
         TextColor3=Color3.fromRGB(128,130,146),BackgroundTransparency=1,Size=UDim2.new(1,-130,0,12),
         Position=UDim2.new(0,70,0,17),TextXAlignment=Enum.TextXAlignment.Left,ZIndex=4})
-    local InfoTitle = Create("TextLabel",{Parent=InfoCard,Text="Feature Info",Font=Enum.Font.FredokaOne,TextSize=20,
+    local InfoTitle = Create("TextLabel",{Parent=InfoCard,Text="Feature Info",Font=Enum.Font.GothamBold,TextSize=20, -- FONT CHANGE: Match Player tab
         TextColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,Size=UDim2.new(1,-130,0,28),
         Position=UDim2.new(0,70,0,30),TextXAlignment=Enum.TextXAlignment.Left,
         TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=4})
@@ -2879,7 +2879,7 @@ function Library:CreateWindow(options)
     -- MODIFIED: Corner brackets hidden per user request
     do
         local IdleFX = Create("Frame", { Name = "IdleFX", Parent = MainFrame, BackgroundTransparency = 1, BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 1, 0), Active = false, ZIndex = 40, Visible = false }) -- HIDDEN: Corner elements removed
+            Size = UDim2.new(1, 0, 1, 0), Active = false, ZIndex = 40, Visible = false }) -- HIDDEN: All idle effects removed
         local corners = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 } }
         for i, c in ipairs(corners) do
             local ax, ay = c[1], c[2]
@@ -2895,7 +2895,7 @@ function Library:CreateWindow(options)
             end
         end
         local function EdgeSweep(name, y, dir, dur)
-            local line = Create("Frame", { Parent = IdleFX, BackgroundColor3 = AccentColor, BorderSizePixel = 0, Active = false,
+            local line = Create("Frame", { Parent = IdleFX, BackgroundColor3 = AccentColor, BorderSizePixel = 0, Active = false, Visible = false, -- HIDDEN
                 Size = UDim2.new(1, -44, 0, 1), AnchorPoint = Vector2.new(0.5, y), Position = UDim2.new(0.5, 0, y, y == 0 and 1 or -1) })
             local g = Create("UIGradient", { Parent = line, Offset = Vector2.new(-dir, 0), Transparency = NumberSequence.new({
                 NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.42, 1), NumberSequenceKeypoint.new(0.5, 0.05),
@@ -3304,8 +3304,11 @@ function Library:CreateWindow(options)
             AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 8, 0.5, 0), Active = false, ZIndex = 4 })
         Create("UICorner", { Parent = CfgDot, CornerRadius = UDim.new(1, 0) })
         AddBounce(CfgBtn, 0.95)
-        local function Reposition() CfgBtn.Position = UDim2.new(1, -141 - SearchBar.Size.X.Offset - 8, 0.5, 0) end
-        SearchBar:GetPropertyChangedSignal("Size"):Connect(Reposition)
+        local function Reposition()
+            -- Config button stays at fixed position, no longer dynamically adjusts to SearchBar
+            CfgBtn.Position = UDim2.new(1, -60, 0.5, 0)
+        end
+        -- Reposition no longer needs to listen to SearchBar changes
         Reposition()
         CfgBtn.MouseEnter:Connect(function() if not menuOpen then Tween(CfgStroke, { Color = INPUT_STROKE_FOCUS }, TI.Fast) end end)
         CfgBtn.MouseLeave:Connect(function() if not menuOpen then Tween(CfgStroke, { Color = INPUT_STROKE }, TI.Fast) end end)
@@ -3826,7 +3829,7 @@ function Library:CreateWindow(options)
     local QuickPagesChevron = QuickFieldKit.Arrow
 
     QuickPagesPanel = Create("Frame", {
-        Name = "QuickPagesPanel", Parent = MainFrame, Visible = false,
+        Name = "QuickPagesPanel", Parent = MainFrame, Visible = false, -- HIDDEN per user request
         Size = UDim2.new(0, 220, 0, 148), Position = UDim2.new(0, 0, 0, 0),
         BackgroundColor3 = Color3.fromRGB(19, 20, 24), BackgroundTransparency = 0.04,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true, ZIndex = 180,
@@ -3922,7 +3925,7 @@ function Library:CreateWindow(options)
     local QPTag = { Gap = 6 }
     function QPTag.UDim(row, dx) return UDim2.new(0, (row.TagX or 0) + (dx or 0), 0.5, 0) end
     function QPTag.Layout(row)
-        local pageW = TextService:GetTextSize(row.Button.Text, 13, Enum.Font.FredokaOne, Vector2.new(1000, 40)).X
+        local pageW = TextService:GetTextSize(row.Button.Text, 13, Enum.Font.GothamBold, Vector2.new(1000, 40)).X -- FONT CHANGE: Match Player tab
         local tabW = TextService:GetTextSize(row.TabTag.Text, 9, Enum.Font.GothamMedium, Vector2.new(1000, 40)).X
         local rowW = row.Button.AbsoluteSize.X
         if rowW <= 0 then rowW = 190 end
@@ -4102,7 +4105,7 @@ function Library:CreateWindow(options)
                 if not row then
                     local rowButton = Create("TextButton", {
                         Name = "QuickPageOption", Parent = QuickPagesList,
-                        Text = tostring(page.PageName or "Page"), Font = Enum.Font.FredokaOne,
+                        Text = tostring(page.PageName or "Page"), Font = Enum.Font.GothamBold, -- FONT CHANGE: Match Player tab
                         TextSize = 13, TextColor3 = SubTextColor,
                         BackgroundColor3 = OPTION_ROW_BACKGROUND, BackgroundTransparency = 1,
                         BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 27),
