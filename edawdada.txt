@@ -862,7 +862,7 @@ end
 local function ComputeUIScale()
     local dp = EstimateDeviceDP()
     if not dp or dp <= 0 then dp = REFERENCE_DP_WIDTH end
-    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0)
+    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0) * 0.2
 end
 
 -- ============================================================
