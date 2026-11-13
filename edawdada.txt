@@ -13129,8 +13129,10 @@ end
     SetLoadingProgress(math.max(loadingState.progress, 0.88), "Finalizing interface...")
     TryFinishLoading()
     UpdateBottomBar()
-    
--- UAI UI Designer saved preview edits
+    return Window
+end
+
+return Library
 do
     local __uaiRoot = Window and Window.MainFrame
     if __uaiRoot then
