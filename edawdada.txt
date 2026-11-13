@@ -3077,7 +3077,7 @@ function Library:CreateWindow(options)
     -- Left cluster: glass badge (logo / initial) + gradient title + live status line + divider.
     do
     local LeftBadge = Create("Frame",{Name="LeftBadge",Parent=TopBar,BackgroundColor3=Color3.new(1,1,1),
-        Size=UDim2.new(0,28,0,28),Position=UDim2.new(0,10,0.5,0),AnchorPoint=Vector2.new(0,0.5),Active=false})
+        Size=UDim2.new(0,120,0,28),Position=UDim2.new(0,10,0.5,0),AnchorPoint=Vector2.new(0,0.5),Active=false}) -- MODIFIED: Wider rectangle
     Create("UICorner",{Parent=LeftBadge,CornerRadius=UDim.new(0,8)})
     Create("UIGradient",{Parent=LeftBadge,Rotation=135,Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,Color3.fromRGB(104,72,190)),ColorSequenceKeypoint.new(1,Color3.fromRGB(26,21,50))})})
