@@ -2478,7 +2478,7 @@ function Library:CreateWindow(options)
     local viewportConn
     local cameraChangedConn
     -- User-chosen multiplier (Settings > UI Scale), applied on top of the automatic device scale.
-    local UserUIScale = 0.6
+    local UserUIScale = 0.25
     local ScaleHooks, ScaleToken = {}, 0
     local function ApplyGlobalScale()
         if GlobalUIScale and GlobalUIScale.Parent then
@@ -8813,9 +8813,9 @@ end
         TransHit.Destroying:Connect(StopTransDrag)
         ScreenGui.Destroying:Connect(StopTransDrag)
 
-        -- ---------- 2) UI Scale stepper (85% - 115%) ----------
-        local SCALE_MIN, SCALE_MAX, SCALE_STEP = 85, 115, 2
-        local scalePct = 100
+        -- ---------- 2) UI Scale stepper (25% - 115%) ----------
+        local SCALE_MIN, SCALE_MAX, SCALE_STEP = 25, 115, 2
+        local scalePct = 25
         local ScaleCard = OptionCard(3, 40)
         OptionTitle(ScaleCard, "UI Scale", nil, 130)
         local function StepButton(text, rightOffset)
@@ -8837,18 +8837,18 @@ end
             return btn
         end
         local ScalePlus  = StepButton("+", -12)
-        local ScaleValue = Create("TextLabel", { Parent = ScaleCard, Text = "100%", Font = Enum.Font.GothamBold, TextSize = 11,
+        local ScaleValue = Create("TextLabel", { Parent = ScaleCard, Text = "25%", Font = Enum.Font.GothamBold, TextSize = 11,
             TextScaled = false, TextColor3 = TextColor, BackgroundTransparency = 1, Size = UDim2.new(0, 40, 0, 22),
             AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -38, 0.5, 0) })
         local ScaleMinus = StepButton("-", -82)
         local function SetScalePct(pct)
-            pct = math.clamp(tonumber(pct) or 100, SCALE_MIN, SCALE_MAX)
-            pct = math.floor(pct / SCALE_STEP + 0.5) * SCALE_STEP
+            pct = math.clamp(tonumber(pct) or 25, SCALE_MIN, SCALE_MAX)
+            pct = SCALE_MIN + math.floor((pct - SCALE_MIN) / SCALE_STEP + 0.5) * SCALE_STEP
             scalePct = pct
             ScaleValue.Text = pct .. "%"
             ScaleMinus.TextTransparency = pct <= SCALE_MIN and 0.6 or 0
             ScalePlus.TextTransparency = pct >= SCALE_MAX and 0.6 or 0
-            UserUIScale = (SCALE_MAX + SCALE_MIN - pct) / 100
+            UserUIScale = pct / 100
             ApplyGlobalScale()
         end
         ScaleMinus.MouseButton1Click:Connect(function()
