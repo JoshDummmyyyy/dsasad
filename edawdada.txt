@@ -2478,7 +2478,7 @@ function Library:CreateWindow(options)
     local viewportConn
     local cameraChangedConn
     -- User-chosen multiplier (Settings > UI Scale), applied on top of the automatic device scale.
-    local UserUIScale = 1
+    local UserUIScale = 0.6
     local ScaleHooks, ScaleToken = {}, 0
     local function ApplyGlobalScale()
         if GlobalUIScale and GlobalUIScale.Parent then
