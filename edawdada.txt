@@ -13133,7 +13133,6 @@ end
 end
 
 return Library
-do
     local __uaiRoot = Window and Window.MainFrame
     if __uaiRoot then
         local __uaiEdits = {
