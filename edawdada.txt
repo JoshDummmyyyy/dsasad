@@ -862,7 +862,8 @@ end
 local function ComputeUIScale()
     local dp = EstimateDeviceDP()
     if not dp or dp <= 0 then dp = REFERENCE_DP_WIDTH end
-    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0)
+    -- MODIFIED: Default scale is now 50% (0.5x) to fit smaller screens
+    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0) * 0.5
 end
 
 -- ============================================================
