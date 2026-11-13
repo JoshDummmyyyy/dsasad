@@ -862,8 +862,7 @@ end
 local function ComputeUIScale()
     local dp = EstimateDeviceDP()
     if not dp or dp <= 0 then dp = REFERENCE_DP_WIDTH end
-    -- MODIFIED: Default scale is now 32% (40% * 0.8 = 32%) - this becomes the new 100% baseline
-    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0) * 0.32
+    return math.clamp(dp / REFERENCE_DP_WIDTH, 0.35, 4.0)
 end
 
 -- ============================================================
@@ -2552,7 +2551,7 @@ function Library:CreateWindow(options)
     Create("TextLabel",{Parent=InfoCard,Text="FEATURE INFO",Font=Enum.Font.Michroma,TextSize=8,
         TextColor3=Color3.fromRGB(128,130,146),BackgroundTransparency=1,Size=UDim2.new(1,-130,0,12),
         Position=UDim2.new(0,70,0,17),TextXAlignment=Enum.TextXAlignment.Left,ZIndex=4})
-    local InfoTitle = Create("TextLabel",{Parent=InfoCard,Text="Feature Info",Font=Enum.Font.GothamBold,TextSize=20, -- FONT CHANGE: Match Player tab
+    local InfoTitle = Create("TextLabel",{Parent=InfoCard,Text="Feature Info",Font=Enum.Font.FredokaOne,TextSize=20,
         TextColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,Size=UDim2.new(1,-130,0,28),
         Position=UDim2.new(0,70,0,30),TextXAlignment=Enum.TextXAlignment.Left,
         TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=4})
@@ -2843,31 +2842,31 @@ function Library:CreateWindow(options)
             grad.Parent = s
             return f, s
         end
-        -- (1) base ring: seamless teal > violet > magenta > blue > teal, slow and calm (SLOWED DOWN)
+        -- (1) base ring: seamless teal > violet > magenta > blue > teal, slow and calm
         local baseG = Create("UIGradient", { Parent = MainFrameStroke, Rotation = 0,
             Color = ColorSequence.new({ KC(0, TEAL), KC(0.25, VIOLET), KC(0.5, MAG), KC(0.75, BLUE), KC(1, TEAL) }),
             Transparency = NumberSequence.new({ KN(0, 0), KN(0.475, 0), KN(0.476, 1), KN(0.524, 1), KN(0.525, 0), KN(1, 0) }) }) -- 5% of the ring is cut away
-        Spin("Outline", baseG, 360, 2.5) -- SLOWED: was 0.85, now 2.5 (3x slower)
+        Spin("Outline", baseG, 360, 0.85)
         -- (2) aurora curtains: soft green/cyan/violet bands drifting the other way
         local curG = Create("UIGradient", { Rotation = 0,
             Color = ColorSequence.new({ KC(0, MINT), KC(0.3, TEAL), KC(0.55, VIOLET), KC(0.8, MAG), KC(1, MINT) }),
             Transparency = NumberSequence.new({ KN(0, 0.5), KN(0.2, 0), KN(0.38, 0.35), KN(0.55, 0.55), KN(0.7, 0), KN(0.85, 0.4), KN(1, 0.5) }) })
         Layer("OutlineAurora", 38, 4.5, curG)
-        Spin("OutlineAurora", curG, -360, 2.4) -- SLOWED: was 0.8, now 2.4 (3x slower)
+        Spin("OutlineAurora", curG, -360, 0.8)
         -- (3) bright comet with a long fading tail
         local w = 0.34
         local cometG = Create("UIGradient", { Rotation = 0,
             Color = ColorSequence.new({ KC(0, VIOLET), KC(0.5 - w, VIOLET), KC(0.5 - w * 0.5, VIOLET:Lerp(ICE, 0.4)), KC(0.5, ICE), KC(0.52, Color3.new(1, 1, 1)), KC(0.53, VIOLET), KC(1, VIOLET) }),
             Transparency = NumberSequence.new({ KN(0, 1), KN(0.5 - w, 1), KN(0.5 - w * 0.55, 0.8), KN(0.5 - w * 0.2, 0.35), KN(0.5, 0), KN(0.53, 0.1), KN(0.535, 1), KN(1, 1) }) })
         Layer("OutlineCometA", 39, 4.5, cometG)
-        Spin("OutlineCometA", cometG, 360, 1.8) -- SLOWED: was 0.6, now 1.8 (3x slower)
+        Spin("OutlineCometA", cometG, 360, 0.6)
         -- (4) two breathing outer halos (outward only, start at the edge)
         local function Halo(name, thick, t0, t1, dur, phase, col)
             local hg = Create("UIGradient", { Rotation = 0, Color = ColorSequence.new({ KC(0, col), KC(0.5, BLUE), KC(1, col) }) })
             local _, hs = Layer(name, 37, thick, hg)
             hs.Transparency = t0
             MotionLoops[name] = TweenService:Create(hs, TweenInfo.new(dur, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, phase), { Transparency = t1, Thickness = thick * 0.6 })
-            Spin(name .. "Spin", hg, 360, 13.2) -- SLOWED: was 4.4, now 13.2 (3x slower)
+            Spin(name .. "Spin", hg, 360, 4.4)
         end
         Halo("OutlineHalo", 8, 0.88, 0.7, 2.2, 0, TEAL)
         Halo("OutlineHalo2", 13, 0.95, 0.84, 3.4, 0.9, MAG)
@@ -2876,10 +2875,9 @@ function Library:CreateWindow(options)
 
     -- IDLE FRAME FX: only frames / outlines animate (corner brackets breathe, edge scanners sweep).
     -- Nothing here moves the window or its content; it rides MainFrame so it follows drags.
-    -- MODIFIED: Corner brackets hidden per user request
     do
         local IdleFX = Create("Frame", { Name = "IdleFX", Parent = MainFrame, BackgroundTransparency = 1, BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 1, 0), Active = false, ZIndex = 40, Visible = false }) -- HIDDEN: All idle effects removed
+            Size = UDim2.new(1, 0, 1, 0), Active = false, ZIndex = 40 })
         local corners = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 } }
         for i, c in ipairs(corners) do
             local ax, ay = c[1], c[2]
@@ -2895,7 +2893,7 @@ function Library:CreateWindow(options)
             end
         end
         local function EdgeSweep(name, y, dir, dur)
-            local line = Create("Frame", { Parent = IdleFX, BackgroundColor3 = AccentColor, BorderSizePixel = 0, Active = false, Visible = false, -- HIDDEN
+            local line = Create("Frame", { Parent = IdleFX, BackgroundColor3 = AccentColor, BorderSizePixel = 0, Active = false,
                 Size = UDim2.new(1, -44, 0, 1), AnchorPoint = Vector2.new(0.5, y), Position = UDim2.new(0.5, 0, y, y == 0 and 1 or -1) })
             local g = Create("UIGradient", { Parent = line, Offset = Vector2.new(-dir, 0), Transparency = NumberSequence.new({
                 NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.42, 1), NumberSequenceKeypoint.new(0.5, 0.05),
@@ -3077,7 +3075,7 @@ function Library:CreateWindow(options)
     -- Left cluster: glass badge (logo / initial) + gradient title + live status line + divider.
     do
     local LeftBadge = Create("Frame",{Name="LeftBadge",Parent=TopBar,BackgroundColor3=Color3.new(1,1,1),
-        Size=UDim2.new(0,30,0,28),Position=UDim2.new(0,10,0.5,0),AnchorPoint=Vector2.new(0,0.5),Active=false}) -- MODIFIED: Wider rectangle
+        Size=UDim2.new(0,28,0,28),Position=UDim2.new(0,10,0.5,0),AnchorPoint=Vector2.new(0,0.5),Active=false})
     Create("UICorner",{Parent=LeftBadge,CornerRadius=UDim.new(0,8)})
     Create("UIGradient",{Parent=LeftBadge,Rotation=135,Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,Color3.fromRGB(104,72,190)),ColorSequenceKeypoint.new(1,Color3.fromRGB(26,21,50))})})
@@ -3090,9 +3088,9 @@ function Library:CreateWindow(options)
             TextSize=15,TextColor3=Color3.new(1,1,1),Text=string.upper(string.sub(tostring(hubName),1,1))})
     end
     end
-    local titleOffsetX = 100
+    local titleOffsetX = 47
     local TitleContainer = Create("Frame",{Parent=TopBar,BackgroundTransparency=1,
-        Size=UDim2.new(0,math.max(0,400-titleOffsetX-6),1,0), -- MODIFIED: Wider container for title/subtitle
+        Size=UDim2.new(0,math.max(0,160-titleOffsetX-6),1,0),
         Position=UDim2.new(0,titleOffsetX,0,0),ClipsDescendants=true})
     local Title = Create("TextLabel",{Parent=TitleContainer,Text=hubName,Font=Enum.Font.GothamBold,TextSize=14,
         TextScaled=true,TextColor3=Color3.new(1,1,1),BackgroundTransparency=1,Position=UDim2.new(0,0,0,4),Size=UDim2.new(1,0,0,16),
@@ -3113,7 +3111,7 @@ function Library:CreateWindow(options)
     local CloseBtn = Create("TextButton",{Parent=TopBar,Text="X",Font=Enum.Font.GothamBold,TextSize=14,
         TextColor3=SubTextColor,BackgroundTransparency=1,Size=UDim2.new(0,30,1,0),Position=UDim2.new(1,-35,0,0)})
     local MinBtn = Create("TextButton",{Parent=TopBar,Text="-",Font=Enum.Font.GothamBold,TextSize=14,
-        TextColor3=SubTextColor,BackgroundTransparency=1,Size=UDim2.new(0,60,1,0),Position=UDim2.new(1,-105,0,0),Visible=false})
+        TextColor3=SubTextColor,BackgroundTransparency=1,Size=UDim2.new(0,30,1,0),Position=UDim2.new(1,-65,0,0)})
     local MaxBtn = Create("TextButton",{Parent=TopBar,Text="[]",Font=Enum.Font.Code,TextSize=14,
         TextScaled=false,TextColor3=SubTextColor,BackgroundTransparency=1,Size=UDim2.new(0,36,0,36),
         Position=UDim2.new(1,-65,0.5,0),AnchorPoint=Vector2.new(1,0.5),
@@ -3195,9 +3193,9 @@ function Library:CreateWindow(options)
         end)
     end)
 
-    -- Search bar (HIDDEN per user request)
+    -- Search bar
     local SearchBar = Create("Frame",{Parent=TopBar,BackgroundColor3=CardColor,Size=UDim2.new(0,250,0,26),
-        Position=UDim2.new(1,-141,0.5,0),AnchorPoint=Vector2.new(1,0.5),ClipsDescendants=true, Visible=false})
+        Position=UDim2.new(1,-141,0.5,0),AnchorPoint=Vector2.new(1,0.5),ClipsDescendants=true})
     Create("UICorner",{Parent=SearchBar,CornerRadius=UDim.new(0,13)})
     Create("ImageLabel",{Parent=SearchBar,BackgroundTransparency=1,Image="rbxassetid://6031154871",
         ImageColor3=SubTextColor,Size=UDim2.new(0,14,0,14),Position=UDim2.new(0,8,0.5,-7)})
@@ -3273,7 +3271,8 @@ function Library:CreateWindow(options)
     -- rather than resolving a global variable named Window.
     local Window
     local ActivateTab, ActivatePage, RefreshGlobalSearch
-    local CloseQuickPagesPanel, RefreshQuickPages, PositionQuickPagesPanel, AnimateQuickRows -- QuickPages stuff removed
+    local QuickPagesButton, QuickPagesPanel, QuickPagesList, QuickPagesSearch, QuickPagesFade
+    local CloseQuickPagesPanel, RefreshQuickPages, PositionQuickPagesPanel, AnimateQuickRows
     local quickPageRows = {}
     local selectedQuickPage = nil
     local quickPagesVisibleCount = 0
@@ -3285,7 +3284,7 @@ function Library:CreateWindow(options)
     ;(function()
         local CFG_BG, CFG_ROW, CFG_EDGE = Color3.fromRGB(10, 9, 16), Color3.fromRGB(21, 20, 32), Color3.fromRGB(58, 52, 92)
         local RED = Color3.fromRGB(240, 92, 108)
-        local MW, MH = 122, 192 -- MODIFIED: Width reduced by 50% (was 244)
+        local MW, MH = 244, 192
         local menuOpen, busy, editTarget, currentName, armedPath = false, false, nil, nil, nil
         local spinTween, dotTween
         local function Folder() return (Window and Window._cfgFolder) or "zyronxSavers" end
@@ -3293,7 +3292,7 @@ function Library:CreateWindow(options)
 
         local CfgBtn = Create("TextButton", { Name = "QuickConfigButton", Parent = TopBar, Text = "Config",
             Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = CardColor,
-            Size = UDim2.new(0, 70, 0, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -60, 0.5, 0), -- MOVED: Closer to settings
+            Size = UDim2.new(0, 70, 0, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -175, 0.5, 0),
             AutoButtonColor = false, ZIndex = 3, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd })
         Create("UICorner", { Parent = CfgBtn, CornerRadius = UDim.new(0, 13) })
         Create("UIPadding", { Parent = CfgBtn, PaddingLeft = UDim.new(0, 11), PaddingRight = UDim.new(0, 22) })
@@ -3303,11 +3302,8 @@ function Library:CreateWindow(options)
             AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 8, 0.5, 0), Active = false, ZIndex = 4 })
         Create("UICorner", { Parent = CfgDot, CornerRadius = UDim.new(1, 0) })
         AddBounce(CfgBtn, 0.95)
-        local function Reposition()
-            -- Config button stays at fixed position, no longer dynamically adjusts to SearchBar
-            CfgBtn.Position = UDim2.new(1, -60, 0.5, 0)
-        end
-        -- Reposition no longer needs to listen to SearchBar changes
+        local function Reposition() CfgBtn.Position = UDim2.new(1, -141 - SearchBar.Size.X.Offset - 8, 0.5, 0) end
+        SearchBar:GetPropertyChangedSignal("Size"):Connect(Reposition)
         Reposition()
         CfgBtn.MouseEnter:Connect(function() if not menuOpen then Tween(CfgStroke, { Color = INPUT_STROKE_FOCUS }, TI.Fast) end end)
         CfgBtn.MouseLeave:Connect(function() if not menuOpen then Tween(CfgStroke, { Color = INPUT_STROKE }, TI.Fast) end end)
@@ -3606,7 +3602,7 @@ function Library:CreateWindow(options)
             if menuOpen or busy then return end
             menuOpen, busy = true, true
             PlayUISound(UI_SOUND_IDS.Control)
-            -- if CloseQuickPagesPanel then pcall(CloseQuickPagesPanel) end
+            if CloseQuickPagesPanel then pcall(CloseQuickPagesPanel) end
             Reset(); Refresh(true); Place()
             Scrim.Visible = true
             Pin.Visible = true
@@ -3660,42 +3656,39 @@ function Library:CreateWindow(options)
     end)()
 
 
-    -- QuickPagesButton REMOVED per user request
-    -- QuickPagesButton = Create("TextButton", {
-    --     Name = "QuickPagesButton", Parent = TopBar, Text = "Quick Pages",
-    --     Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = TextColor,
-    --     BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(0, 118, 0, 26),
-    --     Position = UDim2.new(0, 168, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5),
-    --     AutoButtonColor = false, ZIndex = 2, TextXAlignment = Enum.TextXAlignment.Left,
-    --     TextTruncate = Enum.TextTruncate.AtEnd,
-    --     Visible = false,
-    -- })
-    -- Create("UIPadding", { Parent = QuickPagesButton, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 30) })
+    -- Keep Quick Pages to the left of the search field with responsive spacing.
+    QuickPagesButton = Create("TextButton", {
+        Name = "QuickPagesButton", Parent = TopBar, Text = "Quick Pages",
+        Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = TextColor,
+        BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(0, 118, 0, 26),
+        Position = UDim2.new(0, 168, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5),
+        AutoButtonColor = false, ZIndex = 2, TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd,
+    })
+    Create("UIPadding", { Parent = QuickPagesButton, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 30) })
 
     -- Reserve a gap of ~70% of the search field width while keeping both controls
     -- inside the existing top bar and clear of the right-side window actions.
     local function UpdateTopBarControlLayout()
-    -- UpdateTopBarControlLayout REMOVED per user request
-    -- local function UpdateTopBarControlLayout()
-    --     if not TopBar or not TopBar.Parent or not SearchBar or not QuickPagesButton then return end
-    --     -- MainFrame uses an offset width in the existing architecture; UI scaling
-    --     -- scales both controls together, so use the logical width to avoid double-scaling.
-    --     local logicalWidth = MainFrame.Size.X.Scale == 0 and MainFrame.Size.X.Offset
-    --         or (TopBar.AbsoluteSize.X / math.max(MainScale.Scale, 0.05))
-    --     if not logicalWidth or logicalWidth <= 0 then logicalWidth = 650 end
-    --     local leftX, rightReserve = QuickPagesButton.Position.X.Offset, 141
-    --     local availableWidth = math.max(0, logicalWidth - leftX - rightReserve)
-    --     local minSearchWidth, gapRatio, minQuickWidth = 80, 0.7, 60
-    --     local quickWidth = math.min(118, math.max(minQuickWidth,
-    --         availableWidth - minSearchWidth * (1 + gapRatio)))
-    --     local searchWidth = math.max(minSearchWidth, (availableWidth - quickWidth) / (1 + gapRatio))
-    --     QuickPagesButton.Size = UDim2.new(0, quickWidth, 0, 26)
-    --     RS.SearchW = searchWidth
-    --     if RS.SearchOpen then SearchBar.Size = UDim2.new(0, searchWidth, 0, 26) end
-    --     local surface = TopBar:FindFirstChild("__DarkGradientSurface_QuickPagesButton")
-    --     if surface then surface.Size = QuickPagesButton.Size end
-    -- end
-    -- UpdateTopBarControlLayout()
+        if not TopBar or not TopBar.Parent or not SearchBar or not QuickPagesButton then return end
+        -- MainFrame uses an offset width in the existing architecture; UI scaling
+        -- scales both controls together, so use the logical width to avoid double-scaling.
+        local logicalWidth = MainFrame.Size.X.Scale == 0 and MainFrame.Size.X.Offset
+            or (TopBar.AbsoluteSize.X / math.max(MainScale.Scale, 0.05))
+        if not logicalWidth or logicalWidth <= 0 then logicalWidth = 650 end
+        local leftX, rightReserve = QuickPagesButton.Position.X.Offset, 141
+        local availableWidth = math.max(0, logicalWidth - leftX - rightReserve)
+        local minSearchWidth, gapRatio, minQuickWidth = 80, 0.7, 60
+        local quickWidth = math.min(118, math.max(minQuickWidth,
+            availableWidth - minSearchWidth * (1 + gapRatio)))
+        local searchWidth = math.max(minSearchWidth, (availableWidth - quickWidth) / (1 + gapRatio))
+        QuickPagesButton.Size = UDim2.new(0, quickWidth, 0, 26)
+        RS.SearchW = searchWidth
+        if RS.SearchOpen then SearchBar.Size = UDim2.new(0, searchWidth, 0, 26) end
+        local surface = TopBar:FindFirstChild("__DarkGradientSurface_QuickPagesButton")
+        if surface then surface.Size = QuickPagesButton.Size end
+    end
+    UpdateTopBarControlLayout()
     local topbarLayoutConnection = TopBar:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdateTopBarControlLayout)
     -- After every UI-scale change: re-lay the top bar and replay the scroll observers so tab scrolling + buttons stay correct.
     ScaleHooks[#ScaleHooks + 1] = function() UpdateTopBarControlLayout(); if RS.Run then RS.Run() end end
@@ -3712,10 +3705,9 @@ function Library:CreateWindow(options)
         local CfgBtn = TopBar:FindFirstChild("QuickConfigButton")
         if not CfgBtn then return end
         local YEL_A, YEL_B = Color3.fromRGB(255, 214, 74), Color3.fromRGB(255, 160, 40)
-        -- Lock button REMOVED per user request
-        -- local Lock = Create("TextButton", { Name = "WindowLockButton", Parent = TopBar, Text = "", AutoButtonColor = false,
-        --     BackgroundColor3 = Color3.fromRGB(58, 60, 70), Size = UDim2.new(0, 18, 0, 18), AnchorPoint = Vector2.new(0, 0.5),
-        --     Position = UDim2.new(0, 0, 0.5, 0), ZIndex = 3, BorderSizePixel = 0, Visible = false }) -- HIDDEN per user request
+        local Lock = Create("TextButton", { Name = "WindowLockButton", Parent = TopBar, Text = "", AutoButtonColor = false,
+            BackgroundColor3 = Color3.fromRGB(58, 60, 70), Size = UDim2.new(0, 18, 0, 18), AnchorPoint = Vector2.new(0, 0.5),
+            Position = UDim2.new(0, 0, 0.5, 0), ZIndex = 3, BorderSizePixel = 0 })
         Create("UICorner", { Parent = Lock, CornerRadius = UDim.new(0, 5) })
         Create("UIGradient", { Parent = Lock, Rotation = 90, Color = ColorSequence.new(Color3.fromRGB(150, 152, 165), Color3.fromRGB(95, 97, 110)) })
         local Stroke = Create("UIStroke", { Parent = Lock, Color = Color3.new(1, 1, 1), Thickness = 1.2, Transparency = 0.35, ApplyStrokeMode = Enum.ApplyStrokeMode.Border })
@@ -3753,7 +3745,7 @@ function Library:CreateWindow(options)
         Lock.MouseLeave:Connect(function() if not WindowFlags.DragLocked then Tween(Stroke, { Transparency = 0.35 }, TI.Fast) end end)
         local Info = Create("TextButton", { Name = "LockInfoButton", Parent = TopBar, Text = "i", Font = Enum.Font.GothamBold, TextSize = 12,
             TextColor3 = Color3.fromRGB(225, 227, 236), AutoButtonColor = false, BackgroundColor3 = Color3.fromRGB(58, 60, 70),
-            Size = UDim2.new(0, 18, 0, 18), AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, 0, 0.5, 0), ZIndex = 3, BorderSizePixel = 0, Visible = false }) -- HIDDEN: Tutorial removed
+            Size = UDim2.new(0, 18, 0, 18), AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, 0, 0.5, 0), ZIndex = 3, BorderSizePixel = 0 })
         Create("UICorner", { Parent = Info, CornerRadius = UDim.new(1, 0) })
         Create("UIStroke", { Parent = Info, Color = Color3.fromRGB(110, 112, 126), Thickness = 1.2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border })
         AddBounce(Info, 0.88)
@@ -3830,30 +3822,29 @@ function Library:CreateWindow(options)
     AddBounce(QuickPagesButton, 0.98)
     local QuickPagesChevron = QuickFieldKit.Arrow
 
-    -- QuickPagesPanel REMOVED per user request
-    -- local QuickPagesPanel = Create("Frame", {
-    --     Name = "QuickPagesPanel", Parent = MainFrame, Visible = false,
-    --     Size = UDim2.new(0, 220, 0, 148), Position = UDim2.new(0, 0, 0, 0),
-    --     BackgroundColor3 = Color3.fromRGB(19, 20, 24), BackgroundTransparency = 0.04,
-    --     BorderSizePixel = 0, ClipsDescendants = true, Active = true, ZIndex = 180,
-    -- })
-    -- Create("UICorner", { Parent = QuickPagesPanel, CornerRadius = UDim.new(0, 10) })
+    QuickPagesPanel = Create("Frame", {
+        Name = "QuickPagesPanel", Parent = MainFrame, Visible = false,
+        Size = UDim2.new(0, 220, 0, 148), Position = UDim2.new(0, 0, 0, 0),
+        BackgroundColor3 = Color3.fromRGB(19, 20, 24), BackgroundTransparency = 0.04,
+        BorderSizePixel = 0, ClipsDescendants = true, Active = true, ZIndex = 180,
+    })
+    Create("UICorner", { Parent = QuickPagesPanel, CornerRadius = UDim.new(0, 10) })
     local QuickPagesStroke = Create("UIStroke", {
         Parent = QuickPagesPanel, Color = Color3.fromRGB(64, 65, 74),
         Thickness = 1, Transparency = 0.12,
     })
-    -- local QuickPagesScale = Create("UIScale", { Parent = QuickPagesPanel, Scale = 0.985 })
+    local QuickPagesScale = Create("UIScale", { Parent = QuickPagesPanel, Scale = 0.985 })
     local quickPagesClosing = false
     local quickPagesAnimationId = 0
     local QuickPagesHeader = Create("TextLabel", {
-        -- Parent = QuickPagesPanel, Text = "QUICK PAGES", Font = Enum.Font.Michroma,
+        Parent = QuickPagesPanel, Text = "QUICK PAGES", Font = Enum.Font.Michroma,
         TextSize = 9, TextColor3 = Color3.fromRGB(179, 181, 192),
         BackgroundTransparency = 1, Position = UDim2.new(0, 10, 0, 6),
         Size = UDim2.new(1, -20, 0, 14), TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 181,
     })
     local QuickPagesAccentLine = Create("Frame", {
-        -- Name = "QuickPagesAccentLine", Parent = QuickPagesPanel, BackgroundColor3 = AccentColor,
+        Name = "QuickPagesAccentLine", Parent = QuickPagesPanel, BackgroundColor3 = AccentColor,
         BackgroundTransparency = 1, BorderSizePixel = 0, Size = UDim2.new(1, -20, 0, 1),
         Position = UDim2.new(0, 10, 0, 20), ZIndex = 182, Visible = false,
     })
@@ -3865,20 +3856,20 @@ function Library:CreateWindow(options)
         }),
     })
     QuickPagesSearch = Create("TextBox", {
-        -- Parent = QuickPagesPanel, PlaceholderText = "Find a page...", Text = "",
+        Parent = QuickPagesPanel, PlaceholderText = "Find a page...", Text = "",
         Font = Enum.Font.Ubuntu, TextSize = 12, TextColor3 = TextColor,
         PlaceholderColor3 = INPUT_PLACEHOLDER, BackgroundColor3 = INPUT_BG,
         Size = UDim2.new(1, -20, 0, 24), Position = UDim2.new(0, 10, 0, 23),
         ClearTextOnFocus = false, TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 182,
     })
-    -- Create("UIPadding", { Parent = QuickPagesSearch, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 6) })
-    -- Create("UICorner", { Parent = QuickPagesSearch, CornerRadius = UDim.new(0, 5) })
-    -- local QuickPagesSearchStroke = Create("UIStroke", { Parent = QuickPagesSearch, Color = INPUT_STROKE, Thickness = 1 })
+    Create("UIPadding", { Parent = QuickPagesSearch, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 6) })
+    Create("UICorner", { Parent = QuickPagesSearch, CornerRadius = UDim.new(0, 5) })
+    local QuickPagesSearchStroke = Create("UIStroke", { Parent = QuickPagesSearch, Color = INPUT_STROKE, Thickness = 1 })
     StyleCleanInput(QuickPagesSearch, QuickPagesSearchStroke)
 
     local QuickPagesListBackground = OPTION_LIST_BACKGROUND
-    -- QuickPagesList = Create("ScrollingFrame", {
+    QuickPagesList = Create("ScrollingFrame", {
         Parent = QuickPagesPanel, BackgroundColor3 = QuickPagesListBackground,
         BackgroundTransparency = 0, Size = UDim2.new(1, -20, 0, 84),
         Position = UDim2.new(0, 10, 0, 53), BorderSizePixel = 0,
@@ -3887,12 +3878,12 @@ function Library:CreateWindow(options)
         ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = false,
         AutomaticCanvasSize = Enum.AutomaticSize.None, ZIndex = 182, Active = true,
     })
-    Create("UICorner", { -- Parent = QuickPagesList, CornerRadius = UDim.new(0, 5) })
+    Create("UICorner", { Parent = QuickPagesList, CornerRadius = UDim.new(0, 5) })
     local QuickPagesLayout = Create("UIListLayout", {
-        -- Parent = QuickPagesList, SortOrder = Enum.SortOrder.LayoutOrder,
+        Parent = QuickPagesList, SortOrder = Enum.SortOrder.LayoutOrder,
         Padding = UDim.new(0, 0),
     })
-    -- QuickPagesFade = CreateBottomFade(QuickPagesPanel,
+    QuickPagesFade = CreateBottomFade(QuickPagesPanel,
         UDim2.new(0, 10, 0, 121), UDim2.new(1, -20, 0, 16), 185, QuickPagesListBackground)
 
     -- >>> CINEMATIC SEQUENCE (V2)
@@ -3928,7 +3919,7 @@ function Library:CreateWindow(options)
     local QPTag = { Gap = 6 }
     function QPTag.UDim(row, dx) return UDim2.new(0, (row.TagX or 0) + (dx or 0), 0.5, 0) end
     function QPTag.Layout(row)
-        local pageW = TextService:GetTextSize(row.Button.Text, 13, Enum.Font.GothamBold, Vector2.new(1000, 40)).X -- FONT CHANGE: Match Player tab
+        local pageW = TextService:GetTextSize(row.Button.Text, 13, Enum.Font.FredokaOne, Vector2.new(1000, 40)).X
         local tabW = TextService:GetTextSize(row.TabTag.Text, 9, Enum.Font.GothamMedium, Vector2.new(1000, 40)).X
         local rowW = row.Button.AbsoluteSize.X
         if rowW <= 0 then rowW = 190 end
@@ -4009,19 +4000,18 @@ function Library:CreateWindow(options)
         end
     end
 
-    -- CloseQuickPagesPanel REMOVED per user request
-    -- CloseQuickPagesPanel = function()
-    --     if not QuickPagesPanel or not QuickPagesPanel.Visible or quickPagesClosing then return end
-    --     quickPagesClosing = true
-    --     quickPagesAnimationId = quickPagesAnimationId + 1
-    --     local animationId = quickPagesAnimationId
-    --     local restingPosition = quickPagesTargetPosition or QuickPagesPanel.Position
-    --     local exitPosition = UDim2.new(
-    --         restingPosition.X.Scale, restingPosition.X.Offset,
-    --         restingPosition.Y.Scale, restingPosition.Y.Offset - 12
-    --     )
-    --     QuickPagesList.Active = false
-    --     if QuickPagesFade then QuickPagesFade.Visible = false end
+    CloseQuickPagesPanel = function()
+        if not QuickPagesPanel or not QuickPagesPanel.Visible or quickPagesClosing then return end
+        quickPagesClosing = true
+        quickPagesAnimationId = quickPagesAnimationId + 1
+        local animationId = quickPagesAnimationId
+        local restingPosition = quickPagesTargetPosition or QuickPagesPanel.Position
+        local exitPosition = UDim2.new(
+            restingPosition.X.Scale, restingPosition.X.Offset,
+            restingPosition.Y.Scale, restingPosition.Y.Offset - 12
+        )
+        QuickPagesList.Active = false
+        if QuickPagesFade then QuickPagesFade.Visible = false end
 
         -- 1) contents leave first (rows cascade out bottom-to-top, chrome dissolves)
         Tween(QuickPagesChevron, { Rotation = 0 }, QPInfo(0.45, Enum.EasingStyle.Back))
@@ -4108,8 +4098,8 @@ function Library:CreateWindow(options)
                 local row = quickPageRows[page]
                 if not row then
                     local rowButton = Create("TextButton", {
-                        Name = "QuickPageOption", -- Parent = QuickPagesList,
-                        Text = tostring(page.PageName or "Page"), Font = Enum.Font.GothamBold, -- FONT CHANGE: Match Player tab
+                        Name = "QuickPageOption", Parent = QuickPagesList,
+                        Text = tostring(page.PageName or "Page"), Font = Enum.Font.FredokaOne,
                         TextSize = 13, TextColor3 = SubTextColor,
                         BackgroundColor3 = OPTION_ROW_BACKGROUND, BackgroundTransparency = 1,
                         BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 27),
@@ -10311,7 +10301,7 @@ end
         function TabConfig:CreatePage(pageName)
             pageName = tostring(pageName or "Page")
             local existingPageCount = #TabConfig.Pages
-            local pageBtnWidth = math.max(40, MeasureTextWidth(pageName, Enum.Font.GothamBold, 13) + 26) -- FONT CHANGE: Match Player tab
+            local pageBtnWidth = math.max(40, MeasureTextWidth(pageName, Enum.Font.FredokaOne, 13) + 26)
             if existingPageCount > 0 then
                 -- Minimal dot divider replaces the old ">" glyph.
                 local sepHolder = Create("Frame", {
@@ -10328,7 +10318,7 @@ end
             end
             -- Segmented "pill" page chip. The pill fill/border follow the existing
             -- Highlight tween (size + transparency), so activation logic is untouched.
-            local PageBtn = Create("TextButton",{Parent=PageNav,Text=pageName,Font=Enum.Font.GothamBold, -- FONT CHANGE: Match Player tab
+            local PageBtn = Create("TextButton",{Parent=PageNav,Text=pageName,Font=Enum.Font.FredokaOne,
                 TextSize=13,TextScaled=true,TextColor3=SubTextColor,BackgroundColor3=Color3.fromRGB(66,68,78),
                 BackgroundTransparency=1,AutoButtonColor=false,
                 Size=UDim2.new(0,pageBtnWidth,0,26),LayoutOrder=existingPageCount * 2 + 1})
@@ -10474,7 +10464,7 @@ end
                     Size=UDim2.new(0,3,0,12),AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,8,0.5,0)})
                 Create("UICorner",{Parent=TitleNotch,CornerRadius=UDim.new(1,0)})
                 Create("UIGradient",{Parent=TitleNotch,Rotation=90,Color=ColorSequence.new(AccentColor,Color3.fromRGB(110,72,210))})
-                local TitleText = Create("TextLabel",{Name="SectionTitle",Parent=TitleBar,Text=sectionName,Font=Enum.Font.GothamBold, -- FONT CHANGE: Match Player tab
+                local TitleText = Create("TextLabel",{Name="SectionTitle",Parent=TitleBar,Text=sectionName,Font=Enum.Font.FredokaOne,
                     TextSize=13,TextScaled=true,TextColor3=Color3.fromRGB(240,234,255),BackgroundTransparency=1,
                     Size=UDim2.new(1,-52,0,16),Position=UDim2.new(0,18,0.5,-8),
                     TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd})
