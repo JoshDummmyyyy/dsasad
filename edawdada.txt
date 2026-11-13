@@ -1,405 +1,489 @@
 --[[
-    ZyronX UI Library - Complete Implementation
-    Documentation: https://pages.share-html.com/zyronhypolx
-    
-    Structure: Library → Window → Tab → Page → Section → Control
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
 ]]
+print("[DEBUG] Script started executing...")
 
-print("[ZyronX] Loading library...")
+-- Test 1: Check if game:HttpGet is available
+print("[TEST 1] Checking if game:HttpGet exists...")
+if not game or not game.HttpGet then
+    warn("[ERROR] game:HttpGet not available! Are you using an executor?")
+    return
+end
+print("[TEST 1] ✓ game:HttpGet is available")
 
--- ============================================================================
--- SECTOR 01: SERVICES & LIBRARY LOADING
--- ============================================================================
+-- Test 2: Try to fetch the library
+print("[TEST 2] Attempting to fetch library from GitHub...")
+local success, libraryCode = pcall(function()
+    return game:HttpGet("https://raw.githubusercontent.com/BugBuster3000/sametlibs/refs/heads/main/Reptillian/Source")
+end)
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+if not success then
+    warn("[ERROR] Failed to fetch library:", libraryCode)
+    return
+end
 
--- Load the ZyronX library
-local Library = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/JoshDummmyyyy/dsasad/refs/heads/main/edawdada.txt"))()
+if not libraryCode or libraryCode == "" then
+    warn("[ERROR] Library code is empty or nil!")
+    return
+end
 
--- Optional: Whitelist specific users
--- Library.WhitelistedUsers = { "PourHiTec", "Username2", "Username3" }
+print("[TEST 2] ✓ Successfully fetched library code (", string.len(libraryCode), "bytes )")
 
-print("[ZyronX] Library loaded successfully!")
+-- Test 3: Try to load the library
+print("[TEST 3] Attempting to loadstring the library...")
+local loadSuccess, loadFunc = pcall(function()
+    return loadstring(libraryCode)
+end)
 
--- ============================================================================
--- SECTOR 02: WINDOW CREATION
--- ============================================================================
+if not loadSuccess or not loadFunc then
+    warn("[ERROR] Failed to loadstring:", loadFunc)
+    return
+end
+print("[TEST 3] ✓ Successfully loaded library string")
 
-local Window = Library:CreateWindow({
-    Title = "ZyronX UI Library",
-    Subtitle = "Made By Hypol-X",
-    SubtitleColor = Color3.fromRGB(190, 140, 255),
-    Logo = "rbxassetid://82367817676382",
-    LogoSize = 32,
-    SphereText = false,
-    SphereWords = "ZX",
-    SphereImage = "rbxassetid://82367817676382",
-    SphereIconSize = 38,
-    UITheme = "Default",
-    PanelTheme = "Default",
-    PanelSync = true,
-    FpsPosition = "TopLeft", -- TopLeft, TopMiddle, TopRight, BottomLeft, BottomRight
-    -- UIScale removed - we'll apply it manually to avoid affecting game UI
-})
+-- Test 4: Try to execute the library
+print("[TEST 4] Attempting to execute library...")
+local execSuccess, Library = pcall(loadFunc)
 
--- Add credit button on Home tab
-Window:AddCredit("Hypol-X", "https://your-url-here.com")
+if not execSuccess then
+    warn("[ERROR] Failed to execute library:", Library)
+    return
+end
 
-print("[ZyronX] Window created!")
+if not Library then
+    warn("[ERROR] Library returned nil!")
+    return
+end
+print("[TEST 4] ✓ Library executed successfully")
 
--- ============================================================================
--- PROPER FIX: Scale ONLY the ZyronX UI, not the game
--- ============================================================================
+-- Test 5: Check if Library has Window function
+print("[TEST 5] Checking if Library:Window exists...")
+if type(Library) ~= "table" then
+    warn("[ERROR] Library is not a table! Type:", type(Library))
+    return
+end
+
+if not Library.Window then
+    warn("[ERROR] Library.Window function not found!")
+    warn("[DEBUG] Available methods:", table.concat(Object.keys(Library or {}), ", "))
+    return
+end
+print("[TEST 5] ✓ Library:Window exists")
+
+-- Test 6: Try to create window
+print("[TEST 6] Attempting to create window...")
+local windowSuccess, Window = pcall(function()
+    return Library:Window({
+        Name = "Reptillian.lua",
+        SubName = "this is wwindow subname",
+        Logo = "rbxassetid://87164893498141"
+    })
+end)
+
+if not windowSuccess then
+    warn("[ERROR] Failed to create window:", Window)
+    return
+end
+
+if not Window then
+    warn("[ERROR] Window returned nil!")
+    return
+end
+print("[TEST 6] ✓ Window created successfully")
+print("[DEBUG] Window type:", type(Window))
+
+-- Test 7: Try to add KeybindList (wrapped in pcall)
+print("[TEST 7] Attempting to add KeybindList...")
+local kbSuccess, kbResult = pcall(function()
+    if Window.KeybindList then
+        return Window:KeybindList({
+            Name = "Active Keybinds"
+        })
+    end
+end)
+if not kbSuccess then
+    warn("[ERROR] KeybindList error:", kbResult)
+    print("[TEST 7] ✗ KeybindList failed but continuing...")
+else
+    print("[TEST 7] ✓ KeybindList completed")
+end
+
+-- Test 8: Try to add ESPPreview in a separate thread
+print("[TEST 8] Attempting to add ESPPreview in async mode...")
 task.spawn(function()
-    task.wait(0.5) -- Wait for UI to initialize
+    print("[TEST 8] [ASYNC] Starting ESPPreview creation...")
     
-    local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-    
-    -- Find the ZyronX ScreenGui specifically
-    local zyronxGui = nil
-    for _, gui in pairs(playerGui:GetChildren()) do
-        if gui:IsA("ScreenGui") then
-            -- Look for the main UI frame
-            local hasLargeFrame = false
-            for _, child in pairs(gui:GetDescendants()) do
-                if child:IsA("Frame") and child.AbsoluteSize.X > 800 then
-                    hasLargeFrame = true
-                    break
+    local espSuccess, espResult = pcall(function()
+        print("[TEST 8] [ASYNC] About to call Window:ESPPreview...")
+        
+        local preview = Window:ESPPreview({
+            Name = "Character Preview"
+        })
+        
+        print("[TEST 8] [ASYNC] Window:ESPPreview returned!")
+        print("[TEST 8] [ASYNC] Preview type:", type(preview))
+        print("[TEST 8] [ASYNC] Preview value:", tostring(preview))
+        
+        if not preview then
+            warn("[TEST 8] [ASYNC] Preview is nil!")
+            return nil
+        end
+        
+        -- Wait a moment for initialization
+        print("[TEST 8] [ASYNC] Waiting for preview to initialize...")
+        task.wait(1)
+        
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        
+        print("[TEST 8] [ASYNC] LocalPlayer:", tostring(LocalPlayer))
+        
+        if preview and type(preview) == "table" then
+            print("[TEST 8] [ASYNC] Listing preview methods:")
+            local methodCount = 0
+            for k, v in pairs(preview) do
+                if type(v) == "function" then
+                    print("[TEST 8] [ASYNC]   - " .. tostring(k))
+                    methodCount = methodCount + 1
                 end
             end
+            print("[TEST 8] [ASYNC] Total methods found:", methodCount)
+        end
+        
+        if LocalPlayer then
+            print("[TEST 8] [ASYNC] Waiting for character...")
+            local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+            print("[TEST 8] [ASYNC] Character found:", character.Name)
             
-            if hasLargeFrame then
-                zyronxGui = gui
-                print("[SCALE] Found ZyronX UI:", gui.Name)
-                break
-            end
-        end
-    end
-    
-    if zyronxGui then
-        -- Remove any existing UIScale to start fresh
-        for _, child in pairs(zyronxGui:GetChildren()) do
-            if child:IsA("UIScale") then
-                child:Destroy()
-            end
-        end
-        
-        -- Add a NEW UIScale that only affects this ScreenGui
-        local uiScale = Instance.new("UIScale")
-        uiScale.Scale = 0.5 -- 50% size
-        uiScale.Parent = zyronxGui
-        
-        print("[SCALE] Applied 0.5 scale to ZyronX UI only")
-        print("[SCALE] Game UI should remain unaffected")
-        
-        -- Verify game UI is not scaled
-        task.wait(0.5)
-        for _, gui in pairs(playerGui:GetChildren()) do
-            if gui ~= zyronxGui and gui:IsA("ScreenGui") then
-                -- Make sure other GUIs don't have unwanted scaling
-                local otherScale = gui:FindFirstChildOfClass("UIScale")
-                if otherScale and otherScale.Scale ~= 1 then
-                    warn("[WARNING] Found scaled UI that isn't ZyronX:", gui.Name, "Scale:", otherScale.Scale)
+            if preview and type(preview) == "table" then
+                -- Try all possible methods
+                local methods = {
+                    "SetCharacter", "UpdateCharacter", "SetModel", "Update",
+                    "SetPreview", "LoadCharacter", "ShowCharacter", "Refresh",
+                    "Set", "Load", "UpdatePreview"
+                }
+                
+                print("[TEST 8] [ASYNC] Trying to set character...")
+                local success = false
+                for _, methodName in ipairs(methods) do
+                    if preview[methodName] then
+                        print("[TEST 8] [ASYNC] Trying method:", methodName)
+                        local ok, err = pcall(function()
+                            preview[methodName](preview, character)
+                        end)
+                        if ok then
+                            print("[TEST 8] [ASYNC] ✓ Character set via", methodName)
+                            success = true
+                            break
+                        else
+                            print("[TEST 8] [ASYNC] ✗", methodName, "failed:", tostring(err))
+                        end
+                    end
+                end
+                
+                if not success then
+                    print("[TEST 8] [ASYNC] ⚠ No working method found")
                 end
             end
+        else
+            print("[TEST 8] [ASYNC] ⚠ LocalPlayer not found")
         end
-    else
-        warn("[SCALE] Could not find ZyronX UI to scale")
-    end
-end)
-
--- ============================================================================
--- SECTOR 03: MAIN TAB - COMBAT & FEATURES
--- ============================================================================
-
-local MainTab = Window:CreateTab("Blank", true, false) -- name, startSelected, premium
-local MainPage = MainTab:CreatePage("Blank")
-local CombatSection = MainPage:CreateSection("Blank")
-
--- Toggle with full info
-CombatSection:AddToggle("Blank", false, function(enabled)
-    print("[Aimbot] Status:", enabled)
-    -- Your aimbot logic here
-end, {
-    Title = "Aimbot",
-    Description = "Automatically aims at enemies.",
-    DefaultEnabled = true,
-    DefaultState = false
-})
-
--- Slider
-CombatSection:AddSlider("Blank", 0, 100, 50, function(value)
-    print("[Aimbot Smoothness]", value)
-    -- Your smoothness logic here
-end)
-
--- Dropdown (single select)
-CombatSection:AddDropdown("Blank", {
-    "Closest",
-    "Lowest HP",
-    "Highest HP",
-    "Crosshair"
-}, false, function(selected)
-    print("[Priority]", selected)
-end, {
-    Title = "Target Priority",
-    Description = "How to choose targets.",
-    DefaultEnabled = true,
-    DefaultOptions = { "Closest" }
-})
-
--- Multi-Select Dropdown
-CombatSection:AddDropdown("Blank", {
-    "Teammates",
-    "Friends",
-    "Allies",
-    "NPCs"
-}, true, function(selected) -- true = multi-select
-    print("[Ignore List]", selected)
-end, {
-    Title = "Ignore List",
-    Description = "Don't target these groups.",
-    DefaultOptions = { "Teammates", "Friends" }
-})
-
--- Keybind
-CombatSection:AddKeybind("Blank", "E", function(pressed)
-    print("[Aimbot Hotkey] Pressed:", pressed)
-end)
-
--- Color Picker
-CombatSection:AddColorPicker("Blank", Color3.fromRGB(255, 0, 0), function(color)
-    print("[Crosshair Color]", color)
-end)
-
--- ============================================================================
--- SECTOR 04: VISUALS TAB
--- ============================================================================
-
-local VisualsTab = Window:CreateTab("Blank", false, false)
-local ESPPage = VisualsTab:CreatePage("Blank")
-local ESPSection = ESPPage:CreateSection("Blank")
-
-ESPSection:AddToggle("Blank", false, function(enabled)
-    print("[ESP] Enabled:", enabled)
-end, {
-    Title = "ESP",
-    Description = "See players through walls."
-})
-
-ESPSection:AddToggle("Blank", true, function(enabled)
-    print("[ESP Names]", enabled)
-end)
-
-ESPSection:AddToggle("Blank", true, function(enabled)
-    print("[ESP Distance]", enabled)
-end)
-
-ESPSection:AddToggle("Blank", true, function(enabled)
-    print("[ESP Health]", enabled)
-end)
-
-ESPSection:AddColorPicker("Blank", Color3.fromRGB(0, 255, 255), function(color)
-    print("[ESP Color]", color)
-end)
-
-ESPSection:AddSlider("Blank", 100, 5000, 1000, function(value)
-    print("[ESP Distance]", value)
-end)
-
--- ============================================================================
--- SECTOR 05: PLAYER TAB
--- ============================================================================
-
-local PlayerTab = Window:CreateTab("Blank", false, false)
-local PlayerPage = PlayerTab:CreatePage("Blank")
-local MovementSection = PlayerPage:CreateSection("Blank")
-
-MovementSection:AddToggle("Blank", false, function(enabled)
-    print("[Speed]", enabled)
-    local player = Players.LocalPlayer
-    if player and player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = enabled and 100 or 16
-    end
-end, {
-    Title = "Speed Hack",
-    Description = "Increases your movement speed.",
-    Confirm = {
-        Title = "Enable Speed Hack?",
-        Description = "This may be detectable.",
-        Yes = "Yes, enable it",
-        No = "No, cancel",
-        Danger = true
-    }
-})
-
-MovementSection:AddSlider("Blank", 16, 200, 16, function(value)
-    print("[Walk Speed]", value)
-    local player = Players.LocalPlayer
-    if player and player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = value
-    end
-end)
-
-MovementSection:AddSlider("Blank", 50, 300, 50, function(value)
-    print("[Jump Power]", value)
-    local player = Players.LocalPlayer
-    if player and player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.JumpPower = value
-    end
-end)
-
-MovementSection:AddToggle("Blank", false, function(enabled)
-    print("[No Clip]", enabled)
-    -- Your no clip logic here
-end)
-
--- ============================================================================
--- SECTOR 06: MISC TAB
--- ============================================================================
-
-local MiscTab = Window:CreateTab("Blank", false, false)
-local MiscPage = MiscTab:CreatePage("Blank")
-local UtilSection = MiscPage:CreateSection("Blank")
-
--- Textbox
-UtilSection:AddTextbox("Blank", "Enter your name...", function(text)
-    print("[Custom Name]", text)
-end)
-
--- Indicator (live updating value)
-UtilSection:AddIndicator("Blank", false, function()
-    return #Players:GetPlayers()
-end)
-
-UtilSection:AddIndicator("Blank", false, function()
-    local ping = tonumber(string.format("%.0f", Players.LocalPlayer:GetNetworkPing() * 1000))
-    return ping .. "ms"
-end)
-
--- Button with confirmation
-UtilSection:AddButton("Blank", function()
-    local TeleportService = game:GetService("TeleportService")
-    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
-end, {
-    Title = "Rejoin Server",
-    Description = "Rejoins the current server.",
-    Confirm = {
-        Title = "Rejoin Server?",
-        Description = "You will reconnect to this server.",
-        Yes = "Yes, rejoin",
-        No = "Cancel",
-        Danger = false
-    }
-})
-
-UtilSection:AddButton("Blank", function()
-    setclipboard(game.JobId)
-    Library:Notify({
-        Title = "Copied!",
-        Desc = "Job ID copied to clipboard.",
-        Be = "Success"
-    })
-end)
-
--- Copy Button (dedicated control)
-UtilSection:AddCopyButton("Blank", game.JobId)
-
--- Executor (code execution)
-ExecutorSection = MiscPage:CreateSection("Blank")
-ExecutorSection:AddExecutor("Blank", function(code)
-    print("[Executing]", code)
-    local success, err = pcall(function()
-        loadstring(code)()
+        
+        return preview
     end)
-    if success then
-        Library:Notify({
-            Title = "Success",
-            Desc = "Script executed successfully.",
-            Be = "Success"
-        })
+    
+    print("[TEST 8] [ASYNC] pcall completed. Success:", espSuccess)
+    
+    if not espSuccess then
+        warn("[ERROR] ESPPreview error:", tostring(espResult))
+        print("[TEST 8] ✗ ESPPreview failed")
     else
-        Library:Notify({
-            Title = "Error",
-            Desc = tostring(err),
-            Be = "Error"
-        })
+        print("[TEST 8] ✓ ESPPreview process completed")
     end
 end)
+print("[TEST 8] ✓ ESPPreview started in background thread")
+task.wait(0.1) -- Brief pause to let it initialize
 
--- ============================================================================
--- SECTOR 07: PREMIUM TAB (EXAMPLE)
--- ============================================================================
+-- Test 9: Try to create page
+print("[TEST 9] Attempting to create page...")
+if not Window.Page then
+    warn("[ERROR] Window:Page method doesn't exist!")
+    return
+end
+local pageSuccess, MainPage = pcall(function()
+    return Window:Page({
+        Name = "Aimbot",
+        Icon = "rbxassetid://132783180980031"
+    })
+end)
+if not pageSuccess then
+    warn("[ERROR] Failed to create page:", MainPage)
+    return
+end
+if not MainPage then
+    warn("[ERROR] Page returned nil!")
+    return
+end
+print("[TEST 9] ✓ Page created successfully")
 
-local PremiumTab = Window:CreateTab("Blank", false, true) -- premium = true
-local ProPage = PremiumTab:CreatePage("Blank")
-local ProSection = ProPage:CreateSection("Blank")
+-- Test 10: Try to create left section
+print("[TEST 10] Attempting to create left section...")
+local leftSuccess, LeftColumn = pcall(function()
+    return MainPage:Section({
+        Name = "Features",
+        Side = 1
+    })
+end)
+if not leftSuccess then
+    warn("[ERROR] Failed to create left section:", LeftColumn)
+    return
+end
+print("[TEST 10] ✓ Left section created")
 
-ProSection:AddToggle("Blank", false, function(enabled)
-    print("[Auto Farm]", enabled)
-end, {
-    Title = "Auto Farm",
-    Description = "Automatically farms for you.",
+print("[DEBUG] All tests passed! Continuing with UI creation...")
+
+
+-- Test 11: Try to create toggle
+print("[TEST 11] Attempting to create first toggle (Enable Aimbot)...")
+local toggleSuccess, toggle = pcall(function()
+    return LeftColumn:Toggle({
+        Name = "Enable Aimbot",
+        Flag = "Aimbot",
+        Default = false,
+        Callback = function(Value)
+            print("[Aimbot] Status:", Value)
+        end
+    })
+end)
+if not toggleSuccess then
+    warn("[ERROR] Failed to create toggle:", toggle)
+else
+    print("[TEST 11] ✓ Toggle created")
+end
+
+
+local ToggleWithKeybind = LeftColumn:Toggle({
+    Name = "ESP Toggle",
+    Flag = "ESP",
+    Default = true,
+    Callback = function(Value)
+        print("[ESP] Status:", Value)
+    end
 })
 
-ProSection:AddButton("Blank", function()
-    Library:Notify({
-        Title = "Unlocked",
-        Desc = "All features unlocked!",
-        Be = "Success"
-    })
-end)
-
--- ============================================================================
--- SECTOR 08: SETTINGS & CONFIG
--- ============================================================================
-
-local SettingsTab = Window:CreateTab("Blank", false, false)
-local SettingsPage = SettingsTab:CreatePage("Blank")
-local ConfigSection = SettingsPage:CreateSection("Blank")
-
--- Built-in config system
-ConfigSection:AddConfigManager("zyronx_configs")
-
-local InfoSection = SettingsPage:CreateSection("Blank")
-
-InfoSection:AddButton("Blank", function()
-    Library:Notify({
-        Title = "Test Notification",
-        Desc = "This is a test notification.",
-        Be = "Success" -- Success | Warning | Error
-    })
-end)
-
-InfoSection:AddButton("Blank", function()
-    Library:Notify({
-        Title = "Warning!",
-        Desc = "This is a warning message.",
-        Be = "Warning"
-    })
-end)
-
-InfoSection:AddButton("Blank", function()
-    Library:Notify({
-        Title = "Error!",
-        Desc = "Something went wrong.",
-        Be = "Error"
-    })
-end)
-
--- ============================================================================
--- FINAL
--- ============================================================================
-
-print("===========================================")
-print("[ZyronX] UI loaded successfully!")
-print("[ZyronX] All features are ready to use.")
-print("===========================================")
-
-Library:Notify({
-    Title = "ZyronX UI",
-    Desc = "Successfully loaded!",
-    Be = "Success"
+ToggleWithKeybind:Keybind({
+    Name = "ESP Key",
+    Flag = "ESPKey",
+    Default = Enum.KeyCode.E,
+    Mode = "Toggle",
+    Callback = function(Toggled)
+        ToggleWithKeybind:Set(Toggled)
+        print("[ESP] Key pressed:", Toggled)
+    end
 })
+
+local ToggleWithColor = LeftColumn:Toggle({
+    Name = "ESP Color",
+    Flag = "ESPColorToggle",
+    Default = true,
+    Callback = function(Value)
+        print("[ESP Color] Toggle:", Value)
+    end
+})
+
+ToggleWithColor:Colorpicker({
+    Flag = "ESPColor",
+    Default = Color3.fromRGB(0, 255, 255),
+    Alpha = 0.8,
+    Callback = function(Color, Alpha)
+        print("[ESP Color] Color:", Color, "Alpha:", Alpha)
+    end
+})
+
+local FullToggle = LeftColumn:Toggle({
+    Name = "Full Control",
+    Flag = "FullControl",
+    Default = false,
+    Callback = function(Value)
+        print("[Full] Status:", Value)
+    end
+})
+
+FullToggle:Keybind({
+    Name = "Full Key",
+    Flag = "FullKey",
+    Default = Enum.KeyCode.R,
+    Mode = "Toggle",
+    Callback = function(Toggled)
+        FullToggle:Set(Toggled)
+    end
+})
+
+FullToggle:Colorpicker({
+    Flag = "FullColor",
+    Default = Color3.fromRGB(255, 100, 0),
+    Alpha = 1,
+    Callback = function(Color, Alpha)
+        print("[Full] Color updated:", Color)
+    end
+})
+
+LeftColumn:Slider({
+    Name = "Aimbot Smoothness",
+    Flag = "Smoothness",
+    Min = 0,
+    Max = 100,
+    Default = 50,
+    Decimals = 1,
+    Suffix = "%",
+    Callback = function(Value)
+        print("[Slider] Value:", Value)
+    end
+})
+
+LeftColumn:Dropdown({
+    Name = "Target Priority",
+    Flag = "Priority",
+    Items = {"Closest", "Lowest HP", "Highest HP", "Crosshair"},
+    Default = "Closest",
+    Callback = function(Value)
+        print("[Dropdown] Selected:", Value)
+    end
+})
+
+LeftColumn:Textbox({
+    Name = "Custom Message",
+    Flag = "Message",
+    Placeholder = "Type your message...",
+    Finished = true,
+    Callback = function(Value)
+        if Value and Value ~= "" then
+            print("[Textbox] Message:", Value)
+        end
+    end
+})
+
+LeftColumn:Button({
+    Name = "Click Me!",
+    Callback = function()
+        print("[Button] Pressed!")
+        Library:Notification({
+            Name = "Button",
+            Description = "You clicked the button!",
+            Duration = 2,
+            Color = Color3.fromRGB(52, 255, 126)
+        })
+    end
+})
+
+local RightColumn = MainPage:Section({
+    Name = "Advanced",
+    Side = 2
+})
+
+local ColorLabel = RightColumn:Label({
+    Name = "Choose Color"
+})
+
+ColorLabel:Colorpicker({
+    Flag = "ColorPicker",
+    Default = Color3.fromRGB(255, 0, 0),
+    Alpha = 1,
+    Callback = function(Color, Alpha)
+        print("[Colorpicker] Color:", Color, "Alpha:", Alpha)
+    end
+})
+
+local KeyLabel = RightColumn:Label({
+    Name = "Set Key"
+})
+
+KeyLabel:Keybind({
+    Name = "Action Key",
+    Flag = "ActionKey",
+    Default = Enum.KeyCode.F,
+    Mode = "Toggle",
+    Callback = function(Toggled)
+        print("[Keybind] Key pressed, state:", Toggled)
+    end
+})
+
+RightColumn:ListBox({
+    Name = "Select Players",
+    Flag = "Players",
+    Items = {"Player1", "Player2", "Player3", "Player4", "Player5"},
+    Default = "Player1",
+    Multi = true,
+    Height = 150,
+    Callback = function(Value)
+        print("[ListBox] Selected:", Value)
+    end
+})
+
+RightColumn:Label({
+    Name = "Standalone Keybind"
+}):Keybind({
+    Name = "Standalone Key",
+    Flag = "StandaloneKey",
+    Default = Enum.KeyCode.G,
+    Mode = "Hold",
+    Callback = function(Toggled)
+        print("[Standalone] Key held:", Toggled)
+    end
+})
+
+RightColumn:Label({
+    Name = "Standalone Color"
+}):Colorpicker({
+    Flag = "StandaloneColor",
+    Default = Color3.fromRGB(0, 255, 0),
+    Alpha = 0.5,
+    Callback = function(Color, Alpha)
+        print("[Standalone Color] Color:", Color, "Alpha:", Alpha)
+    end
+})
+
+RightColumn:Divider()
+
+RightColumn:Button({
+    Name = "Kill All",
+    Callback = function()
+        print("[Button] Kill All pressed!")
+        Library:Notification({
+            Name = "Kill All",
+            Description = "All enemies eliminated!",
+            Duration = 3,
+            Color = Color3.fromRGB(255, 80, 80)
+        })
+    end
+})
+
+RightColumn:Slider({
+    Name = "Volume",
+    Flag = "Volume",
+    Min = 0,
+    Max = 100,
+    Default = 75,
+    Suffix = "%",
+    Callback = function(Value)
+        print("[Volume] Set to:", Value)
+    end
+})
+
+RightColumn:Dropdown({
+    Name = "Weapon",
+    Flag = "Weapon",
+    Items = {"AK-47", "M4A1", "AWP", "Shotgun"},
+    Default = "AK-47",
+    Multi = false,
+    Callback = function(Value)
+        print("[Weapon] Selected:", Value)
+    end
+})
+
+
+print("===========================================")
+print("[FINAL] Script completed successfully!")
+print("[FINAL] If you don't see a UI, the library may not be rendering it.")
+print("[FINAL] Check if you need to wait/yield for the UI to appear.")
+print("===========================================")
