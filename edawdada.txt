@@ -2843,31 +2843,31 @@ function Library:CreateWindow(options)
             grad.Parent = s
             return f, s
         end
-        -- (1) base ring: seamless teal > violet > magenta > blue > teal, slow and calm
+        -- (1) base ring: seamless teal > violet > magenta > blue > teal, slow and calm (SLOWED DOWN)
         local baseG = Create("UIGradient", { Parent = MainFrameStroke, Rotation = 0,
             Color = ColorSequence.new({ KC(0, TEAL), KC(0.25, VIOLET), KC(0.5, MAG), KC(0.75, BLUE), KC(1, TEAL) }),
             Transparency = NumberSequence.new({ KN(0, 0), KN(0.475, 0), KN(0.476, 1), KN(0.524, 1), KN(0.525, 0), KN(1, 0) }) }) -- 5% of the ring is cut away
-        Spin("Outline", baseG, 360, 0.85)
+        Spin("Outline", baseG, 360, 2.5) -- SLOWED: was 0.85, now 2.5 (3x slower)
         -- (2) aurora curtains: soft green/cyan/violet bands drifting the other way
         local curG = Create("UIGradient", { Rotation = 0,
             Color = ColorSequence.new({ KC(0, MINT), KC(0.3, TEAL), KC(0.55, VIOLET), KC(0.8, MAG), KC(1, MINT) }),
             Transparency = NumberSequence.new({ KN(0, 0.5), KN(0.2, 0), KN(0.38, 0.35), KN(0.55, 0.55), KN(0.7, 0), KN(0.85, 0.4), KN(1, 0.5) }) })
         Layer("OutlineAurora", 38, 4.5, curG)
-        Spin("OutlineAurora", curG, -360, 0.8)
+        Spin("OutlineAurora", curG, -360, 2.4) -- SLOWED: was 0.8, now 2.4 (3x slower)
         -- (3) bright comet with a long fading tail
         local w = 0.34
         local cometG = Create("UIGradient", { Rotation = 0,
             Color = ColorSequence.new({ KC(0, VIOLET), KC(0.5 - w, VIOLET), KC(0.5 - w * 0.5, VIOLET:Lerp(ICE, 0.4)), KC(0.5, ICE), KC(0.52, Color3.new(1, 1, 1)), KC(0.53, VIOLET), KC(1, VIOLET) }),
             Transparency = NumberSequence.new({ KN(0, 1), KN(0.5 - w, 1), KN(0.5 - w * 0.55, 0.8), KN(0.5 - w * 0.2, 0.35), KN(0.5, 0), KN(0.53, 0.1), KN(0.535, 1), KN(1, 1) }) })
         Layer("OutlineCometA", 39, 4.5, cometG)
-        Spin("OutlineCometA", cometG, 360, 0.6)
+        Spin("OutlineCometA", cometG, 360, 1.8) -- SLOWED: was 0.6, now 1.8 (3x slower)
         -- (4) two breathing outer halos (outward only, start at the edge)
         local function Halo(name, thick, t0, t1, dur, phase, col)
             local hg = Create("UIGradient", { Rotation = 0, Color = ColorSequence.new({ KC(0, col), KC(0.5, BLUE), KC(1, col) }) })
             local _, hs = Layer(name, 37, thick, hg)
             hs.Transparency = t0
             MotionLoops[name] = TweenService:Create(hs, TweenInfo.new(dur, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, phase), { Transparency = t1, Thickness = thick * 0.6 })
-            Spin(name .. "Spin", hg, 360, 4.4)
+            Spin(name .. "Spin", hg, 360, 13.2) -- SLOWED: was 4.4, now 13.2 (3x slower)
         end
         Halo("OutlineHalo", 8, 0.88, 0.7, 2.2, 0, TEAL)
         Halo("OutlineHalo2", 13, 0.95, 0.84, 3.4, 0.9, MAG)
@@ -3194,9 +3194,9 @@ function Library:CreateWindow(options)
         end)
     end)
 
-    -- Search bar
+    -- Search bar (HIDDEN per user request)
     local SearchBar = Create("Frame",{Parent=TopBar,BackgroundColor3=CardColor,Size=UDim2.new(0,250,0,26),
-        Position=UDim2.new(1,-141,0.5,0),AnchorPoint=Vector2.new(1,0.5),ClipsDescendants=true})
+        Position=UDim2.new(1,-141,0.5,0),AnchorPoint=Vector2.new(1,0.5),ClipsDescendants=true, Visible=false})
     Create("UICorner",{Parent=SearchBar,CornerRadius=UDim.new(0,13)})
     Create("ImageLabel",{Parent=SearchBar,BackgroundTransparency=1,Image="rbxassetid://6031154871",
         ImageColor3=SubTextColor,Size=UDim2.new(0,14,0,14),Position=UDim2.new(0,8,0.5,-7)})
@@ -3285,7 +3285,7 @@ function Library:CreateWindow(options)
     ;(function()
         local CFG_BG, CFG_ROW, CFG_EDGE = Color3.fromRGB(10, 9, 16), Color3.fromRGB(21, 20, 32), Color3.fromRGB(58, 52, 92)
         local RED = Color3.fromRGB(240, 92, 108)
-        local MW, MH = 244, 192
+        local MW, MH = 122, 192 -- MODIFIED: Width reduced by 50% (was 244)
         local menuOpen, busy, editTarget, currentName, armedPath = false, false, nil, nil, nil
         local spinTween, dotTween
         local function Folder() return (Window and Window._cfgFolder) or "zyronxSavers" end
@@ -3665,6 +3665,7 @@ function Library:CreateWindow(options)
         Position = UDim2.new(0, 168, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5),
         AutoButtonColor = false, ZIndex = 2, TextXAlignment = Enum.TextXAlignment.Left,
         TextTruncate = Enum.TextTruncate.AtEnd,
+        Visible = false, -- HIDDEN: Quick Pages removed per user request
     })
     Create("UIPadding", { Parent = QuickPagesButton, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 30) })
 
@@ -3746,7 +3747,7 @@ function Library:CreateWindow(options)
         Lock.MouseLeave:Connect(function() if not WindowFlags.DragLocked then Tween(Stroke, { Transparency = 0.35 }, TI.Fast) end end)
         local Info = Create("TextButton", { Name = "LockInfoButton", Parent = TopBar, Text = "i", Font = Enum.Font.GothamBold, TextSize = 12,
             TextColor3 = Color3.fromRGB(225, 227, 236), AutoButtonColor = false, BackgroundColor3 = Color3.fromRGB(58, 60, 70),
-            Size = UDim2.new(0, 18, 0, 18), AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, 0, 0.5, 0), ZIndex = 3, BorderSizePixel = 0 })
+            Size = UDim2.new(0, 18, 0, 18), AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, 0, 0.5, 0), ZIndex = 3, BorderSizePixel = 0, Visible = false }) -- HIDDEN: Tutorial removed
         Create("UICorner", { Parent = Info, CornerRadius = UDim.new(1, 0) })
         Create("UIStroke", { Parent = Info, Color = Color3.fromRGB(110, 112, 126), Thickness = 1.2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border })
         AddBounce(Info, 0.88)
