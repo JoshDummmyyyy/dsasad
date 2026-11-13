@@ -1160,7 +1160,7 @@ end
 -- ============================================================
 -- THEME
 -- ============================================================
-local AccentColor     = Color3.fromRGB(190, 140, 255)
+local AccentColor     = Color3.fromRGB(255, 182, 193)
 local BackgroundColor = Color3.fromRGB(18, 18, 20)
 local CardColor       = Color3.fromRGB(24, 24, 27)
 local HoverColor      = Color3.fromRGB(35, 35, 40)
@@ -1300,7 +1300,7 @@ local function ApplyDarkButtonStyle(button, cornerRadius, cinematic)
             stopSpin()
             arc.Rotation = 0
             spin = TweenService:Create(arc,
-                TweenInfo.new(0.7, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1), { Rotation = 360 })
+                TweenInfo.new(2.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1), { Rotation = 360 })
             spin:Play()
         end
         button.MouseEnter:Connect(function()
@@ -1326,7 +1326,7 @@ local function ApplyDarkButtonStyle(button, cornerRadius, cinematic)
             arc.Rotation = 0
             Tween(stroke, { Thickness = 2.4, Transparency = 0 }, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out))
             local myBurst = TweenService:Create(arc,
-                TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Rotation = 360 })
+                TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Rotation = 360 })
             burst = myBurst
             myBurst:Play()
             myBurst.Completed:Once(function(state)
@@ -2824,8 +2824,9 @@ function Library:CreateWindow(options)
     do
         local mc = MainFrame:FindFirstChildOfClass("UICorner")
         local KC, KN = ColorSequenceKeypoint.new, NumberSequenceKeypoint.new
-        local TEAL, VIOLET, MAG, BLUE = Color3.fromRGB(70, 214, 226), Color3.fromRGB(150, 104, 235), Color3.fromRGB(226, 122, 232), Color3.fromRGB(96, 128, 255)
-        local ICE, MINT = Color3.fromRGB(238, 230, 255), Color3.fromRGB(120, 255, 214)
+        local BABY_PINK, SOFT_PINK, WHITE = Color3.fromRGB(255, 182, 193), Color3.fromRGB(255, 218, 226), Color3.new(1, 1, 1)
+        local TEAL, VIOLET, MAG, BLUE = BABY_PINK, SOFT_PINK, BABY_PINK, WHITE
+        local ICE, MINT = WHITE, SOFT_PINK
         ThemeRefs.Stroke = Instance.new("UIGradient") -- detached sink: theme code may tween it, nothing is drawn from it
         local function Spin(name, g, rot, dur)
             MotionLoops[name] = TweenService:Create(g, TweenInfo.new(dur, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1), { Rotation = rot })
@@ -2844,27 +2845,27 @@ function Library:CreateWindow(options)
         local baseG = Create("UIGradient", { Parent = MainFrameStroke, Rotation = 0,
             Color = ColorSequence.new({ KC(0, TEAL), KC(0.25, VIOLET), KC(0.5, MAG), KC(0.75, BLUE), KC(1, TEAL) }),
             Transparency = NumberSequence.new({ KN(0, 0), KN(0.475, 0), KN(0.476, 1), KN(0.524, 1), KN(0.525, 0), KN(1, 0) }) }) -- 5% of the ring is cut away
-        Spin("Outline", baseG, 360, 0.85)
+        Spin("Outline", baseG, 360, 9)
         -- (2) aurora curtains: soft green/cyan/violet bands drifting the other way
         local curG = Create("UIGradient", { Rotation = 0,
             Color = ColorSequence.new({ KC(0, MINT), KC(0.3, TEAL), KC(0.55, VIOLET), KC(0.8, MAG), KC(1, MINT) }),
             Transparency = NumberSequence.new({ KN(0, 0.5), KN(0.2, 0), KN(0.38, 0.35), KN(0.55, 0.55), KN(0.7, 0), KN(0.85, 0.4), KN(1, 0.5) }) })
         Layer("OutlineAurora", 38, 4.5, curG)
-        Spin("OutlineAurora", curG, -360, 0.8)
+        Spin("OutlineAurora", curG, -360, 12)
         -- (3) bright comet with a long fading tail
         local w = 0.34
         local cometG = Create("UIGradient", { Rotation = 0,
             Color = ColorSequence.new({ KC(0, VIOLET), KC(0.5 - w, VIOLET), KC(0.5 - w * 0.5, VIOLET:Lerp(ICE, 0.4)), KC(0.5, ICE), KC(0.52, Color3.new(1, 1, 1)), KC(0.53, VIOLET), KC(1, VIOLET) }),
             Transparency = NumberSequence.new({ KN(0, 1), KN(0.5 - w, 1), KN(0.5 - w * 0.55, 0.8), KN(0.5 - w * 0.2, 0.35), KN(0.5, 0), KN(0.53, 0.1), KN(0.535, 1), KN(1, 1) }) })
         Layer("OutlineCometA", 39, 4.5, cometG)
-        Spin("OutlineCometA", cometG, 360, 0.6)
+        Spin("OutlineCometA", cometG, 360, 8)
         -- (4) two breathing outer halos (outward only, start at the edge)
         local function Halo(name, thick, t0, t1, dur, phase, col)
             local hg = Create("UIGradient", { Rotation = 0, Color = ColorSequence.new({ KC(0, col), KC(0.5, BLUE), KC(1, col) }) })
             local _, hs = Layer(name, 37, thick, hg)
             hs.Transparency = t0
             MotionLoops[name] = TweenService:Create(hs, TweenInfo.new(dur, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, phase), { Transparency = t1, Thickness = thick * 0.6 })
-            Spin(name .. "Spin", hg, 360, 4.4)
+            Spin(name .. "Spin", hg, 360, 18)
         end
         Halo("OutlineHalo", 8, 0.88, 0.7, 2.2, 0, TEAL)
         Halo("OutlineHalo2", 13, 0.95, 0.84, 3.4, 0.9, MAG)
@@ -2899,8 +2900,8 @@ function Library:CreateWindow(options)
             MotionLoops[name] = TweenService:Create(g, TweenInfo.new(dur, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1, false),
                 { Offset = Vector2.new(dir, 0) })
         end
-        EdgeSweep("IdleTop", 0, 1, 2.75)
-        EdgeSweep("IdleBottom", 1, -1, 3.75)
+        EdgeSweep("IdleTop", 0, 1, 6)
+        EdgeSweep("IdleBottom", 1, -1, 8)
         pcall(function() MainFrame:SetAttribute("zx_origin", "hypol-X") end)
     end
 
@@ -3290,7 +3291,7 @@ function Library:CreateWindow(options)
 
         local CfgBtn = Create("TextButton", { Name = "QuickConfigButton", Parent = TopBar, Text = "Config",
             Font = Enum.Font.GothamMedium, TextSize = 11, TextColor3 = TextColor, BackgroundColor3 = CardColor,
-            Size = UDim2.new(0, 70, 0, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -175, 0.5, 0),
+            Size = UDim2.new(0, 70, 0, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -115, 0.5, 0),
             AutoButtonColor = false, ZIndex = 3, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd })
         Create("UICorner", { Parent = CfgBtn, CornerRadius = UDim.new(0, 13) })
         Create("UIPadding", { Parent = CfgBtn, PaddingLeft = UDim.new(0, 11), PaddingRight = UDim.new(0, 22) })
@@ -3300,7 +3301,7 @@ function Library:CreateWindow(options)
             AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 8, 0.5, 0), Active = false, ZIndex = 4 })
         Create("UICorner", { Parent = CfgDot, CornerRadius = UDim.new(1, 0) })
         AddBounce(CfgBtn, 0.95)
-        local function Reposition() CfgBtn.Position = UDim2.new(1, -141 - SearchBar.Size.X.Offset - 8, 0.5, 0) end
+        local function Reposition() CfgBtn.Position = UDim2.new(1, -81 - SearchBar.Size.X.Offset - 8, 0.5, 0) end
         SearchBar:GetPropertyChangedSignal("Size"):Connect(Reposition)
         Reposition()
         CfgBtn.MouseEnter:Connect(function() if not menuOpen then Tween(CfgStroke, { Color = INPUT_STROKE_FOCUS }, TI.Fast) end end)
@@ -3617,7 +3618,7 @@ function Library:CreateWindow(options)
             Tween(CfgStroke, { Color = AccentColor }, TI.Normal)
             EdgeGrad.Rotation = 0
             if spinTween then spinTween:Cancel() end
-            spinTween = TweenService:Create(EdgeGrad, TweenInfo.new(3.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1), { Rotation = 360 })
+            spinTween = TweenService:Create(EdgeGrad, TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1), { Rotation = 360 })
             spinTween:Play()
             if dotTween then dotTween:Play() end
             local Scan = Create("Frame", { Parent = Card, BackgroundColor3 = AccentColor, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 30),
@@ -4534,7 +4535,7 @@ function Library:CreateWindow(options)
         local H_BG, H_EDGE, H_DIM = Color3.fromRGB(19, 19, 28), Color3.fromRGB(52, 52, 76), Color3.fromRGB(120, 122, 142)
         local OWNER_YT = (type(options) == "table" and options.OwnerYT) or Library.OwnerYT or "https://www.youtube.com/@hypol-x"
         local Home = Create("ScrollingFrame", { Name = "HomeTab", Parent = ContentArea, BackgroundTransparency = 1, BorderSizePixel = 0, Size = UDim2.new(1, 0, 1, 0),
-            CanvasSize = UDim2.new(0, 0, 0, 380), ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.Y,
+            CanvasSize = UDim2.new(0, 0, 0, 500), ScrollBarThickness = 0, ScrollingDirection = Enum.ScrollingDirection.Y,
             AutomaticCanvasSize = Enum.AutomaticSize.None, Active = true, Visible = true })
         do -- bottom fade whenever Home has enough content to scroll
             local HomeFade = CreateBottomFade(ContentArea, UDim2.new(0, 0, 1, -34), UDim2.new(1, 0, 0, 34), 30, BackgroundColor)
@@ -4621,7 +4622,8 @@ function Library:CreateWindow(options)
         local pr = Players.PlayerRemoving:Connect(function() task.defer(UpdatePlayers) end)
 
         -- ---------------- OWNER CHANNEL ----------------
-        local YT = NewCard(10, 124, 250, 104)
+        local YT = NewCard(10, 124, 228, 104)
+        YT:SetAttribute("ZXHomeCardRole", "owner")
         Cap(YT, "UI Library Owner", 14, 10, 200)
         local Logo = Create("Frame", { Parent = YT, BackgroundColor3 = Color3.fromRGB(235, 50, 60), BorderSizePixel = 0, Size = UDim2.new(0, 34, 0, 24),
             Position = UDim2.new(0, 14, 0, 30), ZIndex = 3 })
@@ -4656,27 +4658,28 @@ function Library:CreateWindow(options)
         end)
 
         -- ---------------- SERVER LIVE STATS ----------------
-        local Srv = NewCard(10, 236, 250, 134)
+        local Srv = NewCard(246, 124, 228, 104)
+        Srv:SetAttribute("ZXHomeCardRole", "server")
         Cap(Srv, "SERVER LIVE", 14, 10, 150)
         local fpsLbl, pingLbl
         local function Stat(label, x)
             Create("TextLabel", { Parent = Srv, Text = label, Font = Enum.Font.GothamBold, TextSize = 9, TextColor3 = H_DIM, BackgroundTransparency = 1,
-                Size = UDim2.new(0, 100, 0, 12), Position = UDim2.new(0, x, 0, 30), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 3 })
+                Size = UDim2.new(0, 90, 0, 12), Position = UDim2.new(0, x, 0, 30), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 3 })
             return Create("TextLabel", { Parent = Srv, Text = "--", Font = Enum.Font.GothamBlack, TextSize = 24, TextColor3 = TextColor, BackgroundTransparency = 1,
-                Size = UDim2.new(0, 100, 0, 30), Position = UDim2.new(0, x, 0, 44), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 3 })
+                Size = UDim2.new(0, 90, 0, 30), Position = UDim2.new(0, x, 0, 44), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 3 })
         end
         fpsLbl = Stat("FPS", 14)
-        pingLbl = Stat("PING (ms)", 130)
+        pingLbl = Stat("PING (ms)", 124)
         local jobId = tostring(game.JobId or "")
         Create("TextLabel", { Parent = Srv, Text = "SERVER ID  " .. (jobId ~= "" and jobId:sub(1, 13) or "studio"), Font = Enum.Font.Code, TextSize = 10, TextColor3 = H_DIM,
-            BackgroundTransparency = 1, Size = UDim2.new(1, -28, 0, 14), Position = UDim2.new(0, 14, 0, 84), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 3 })
+            BackgroundTransparency = 1, Size = UDim2.new(1, -28, 0, 14), Position = UDim2.new(0, 14, 0, 76), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 3 })
         local barBack = Create("Frame", { Parent = Srv, BackgroundColor3 = Color3.fromRGB(34, 34, 48), BorderSizePixel = 0, Size = UDim2.new(1, -28, 0, 6),
-            Position = UDim2.new(0, 14, 0, 108), ZIndex = 3 })
+            Position = UDim2.new(0, 14, 0, 96), ZIndex = 3 })
         Create("UICorner", { Parent = barBack, CornerRadius = UDim.new(1, 0) })
         local barFill = Create("Frame", { Parent = barBack, BackgroundColor3 = AccentColor, BorderSizePixel = 0, Size = UDim2.new(0, 0, 1, 0), ZIndex = 4 })
         Create("UICorner", { Parent = barFill, CornerRadius = UDim.new(1, 0) })
         Create("TextLabel", { Parent = Srv, Text = "SERVER FILL", Font = Enum.Font.GothamBold, TextSize = 8, TextColor3 = H_DIM, BackgroundTransparency = 1,
-            Size = UDim2.new(0, 100, 0, 10), Position = UDim2.new(0, 14, 0, 97), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 3 })
+            Size = UDim2.new(0, 100, 0, 10), Position = UDim2.new(0, 14, 0, 87), TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 3 })
         local frames = 0
         local hb = RunService.Heartbeat:Connect(function() frames = frames + 1 end)
         task.spawn(function()
@@ -4693,7 +4696,8 @@ function Library:CreateWindow(options)
         end)
 
         -- ---------------- MOVEMENT (vertical sliders) ----------------
-        local Mov = NewCard(268, 124, 207, 246)
+        local Mov = NewCard(246, 236, 228, 246)
+        Mov:SetAttribute("ZXHomeCardRole", "movement")
         Cap(Mov, "MOVEMENT", 14, 10, 150)
         Create("TextLabel", { Parent = Mov, Text = "DRAG TO SET • TAP TOGGLE", Font = Enum.Font.Gotham, TextSize = 9, TextColor3 = H_DIM, BackgroundTransparency = 1,
             Size = UDim2.new(0, 120, 0, 12), Position = UDim2.new(1, -134, 0, 10), TextXAlignment = Enum.TextXAlignment.Right, ZIndex = 3 })
@@ -5645,9 +5649,9 @@ function Library:CreateWindow(options)
 
         local Themes = {}
         Themes["Default"] = {
-            Name = "Default", Hue = 0.74, SatMul = 1, IsDefault = true,
-            Accent = Color3.fromRGB(190, 140, 255), Swatch = Color3.fromRGB(190, 140, 255),
-            Deep = Color3.fromRGB(150, 104, 235), Light = Color3.fromRGB(190, 140, 255),
+            Name = "Default", Hue = 0.976, SatMul = 1, IsDefault = false,
+            Accent = Color3.fromRGB(255, 182, 193), Swatch = Color3.fromRGB(255, 182, 193),
+            Deep = Color3.fromRGB(238, 122, 150), Light = Color3.fromRGB(255, 218, 226),
             Left  = { Color3.fromRGB(18, 18, 20), Color3.fromRGB(16, 15, 19), Color3.fromRGB(14, 13, 19) },
             Right = { Color3.fromRGB(17, 16, 20), Color3.fromRGB(18, 18, 20), Color3.fromRGB(16, 15, 20) },
         }
@@ -8076,7 +8080,7 @@ end
                 kps[#kps + 1] = KN(1, 1)
                 local dg = Create("UIGradient", { Rotation = 0, Color = ColorSequence.new(G1, G2), Transparency = NumberSequence.new(kps) })
                 Ring(root, "HKDash", 43, 3, dg)
-                Loop(root, "HK_dash", dg, TweenInfo.new(3.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1), { Rotation = 360 })
+                Loop(root, "HK_dash", dg, TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1), { Rotation = 360 })
                 -- comet
                 local w = 0.3
                 local cg = Create("UIGradient", { Rotation = 0,
@@ -13131,7 +13135,7 @@ do
     local __uaiRoot = Window and Window.MainFrame
     if __uaiRoot then
         local __uaiEdits = {
-            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -125, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
+            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -115, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
             { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "SettingsButton", class = "TextButton", index = 1 } }, deleted = false, name = "SettingsButton", position = UDim2.new(1, -68, 0.5, 0), size = UDim2.new(0, 30, 0, 26), text = "", textSize = 8, font = "Legacy" },
             { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "SphereBG_TextButton", class = "Frame", index = 2 }, { name = "TextButton", class = "TextButton", index = 1 } }, deleted = false, name = "TextButton", position = UDim2.new(0.5, 0, 0.5, 0), size = UDim2.new(1, 0, 1, 0), text = "-", textSize = 14, font = "GothamBold" },
             { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "Frame", class = "Frame", index = 2 } }, deleted = true, name = "Frame", position = UDim2.new(1, -141, 0.5, 0), size = UDim2.new(0, 26, 0, 26), text = nil, textSize = nil, font = nil },
@@ -13177,7 +13181,7 @@ do
     local __uaiRoot = Window and Window.MainFrame
     if __uaiRoot then
         local __uaiEdits = {
-            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -125, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
+            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -115, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
         }
         local __uaiTargets = {}
         for editIndex, edit in ipairs(__uaiEdits) do
@@ -13219,7 +13223,7 @@ do
             { path = {  }, deleted = false, name = "MainFrame", position = UDim2.new(0.5, 0, 0.5, 0), size = UDim2.new(0, 650, 0, 420), text = nil, textSize = nil, font = nil },
             { path = { { name = "Frame", class = "Frame", index = 1 } }, deleted = false, name = "Frame", position = UDim2.new(0, 0, 0, 0), size = UDim2.new(1, 0, 0, 40), text = nil, textSize = nil, font = nil },
             { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "LeftTopBarDragArea", class = "Frame", index = 1 } }, deleted = false, name = "LeftTopBarDragArea", position = UDim2.new(0, 0, 0, 0), size = UDim2.new(0, 160, 1, 0), text = nil, textSize = nil, font = nil },
-            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -125, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
+            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -115, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
             { path = { { name = "Frame", class = "Frame", index = 4 }, { name = "HomeTab", class = "ScrollingFrame", index = 1 }, { name = "CanvasGroup", class = "CanvasGroup", index = 2 }, { name = "Frame", class = "Frame", index = 1 } }, deleted = false, name = "Frame", position = UDim2.new(0, 260, 0, 0), size = UDim2.new(1, -50, 1, -2), text = nil, textSize = nil, font = nil },
             { path = { { name = "LeftBackgroundGroup", class = "CanvasGroup", index = 1 } }, deleted = false, name = "LeftBackgroundGroup", position = UDim2.new(0, 0, 0, 0), size = UDim2.new(0, 160, 1, 0), text = nil, textSize = nil, font = nil },
             { path = { { name = "LeftBackgroundGroup", class = "CanvasGroup", index = 1 }, { name = "TopBarLeftBackground", class = "Frame", index = 1 } }, deleted = false, name = "TopBarLeftBackground", position = UDim2.new(0, 0, 0, 0), size = UDim2.new(1, 0, 0, 40), text = nil, textSize = nil, font = nil },
@@ -13269,7 +13273,7 @@ do
     local __uaiRoot = Window and Window.MainFrame
     if __uaiRoot then
         local __uaiEdits = {
-            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -125, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
+            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -115, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
             { path = { { name = "Frame", class = "Frame", index = 4 }, { name = "HomeTab", class = "ScrollingFrame", index = 1 }, { name = "CanvasGroup", class = "CanvasGroup", index = 2 } }, deleted = false, name = "CanvasGroup", position = UDim2.new(0, 271, 0, 124), size = UDim2.new(0, 200, 0, 175), text = nil, textSize = nil, font = nil },
             { path = { { name = "Frame", class = "Frame", index = 4 }, { name = "HomeTab", class = "ScrollingFrame", index = 1 }, { name = "CanvasGroup", class = "CanvasGroup", index = 2 }, { name = "TextButton", class = "TextButton", index = 1 } }, deleted = false, name = "TextButton", position = UDim2.new(0, 14, 0, 123), size = UDim2.new(1, -28, 0, 28), text = "COPY LINK", textSize = 11, font = "GothamBold" },
             { path = { { name = "Frame", class = "Frame", index = 4 }, { name = "HomeTab", class = "ScrollingFrame", index = 1 }, { name = "CanvasGroup", class = "CanvasGroup", index = 3 } }, deleted = false, name = "CanvasGroup", position = UDim2.new(0, 10, 0, 124), size = UDim2.new(0, 250, 0, 176), text = nil, textSize = nil, font = nil },
@@ -13637,7 +13641,7 @@ do
     local __uaiRoot = Window and Window.MainFrame
     if __uaiRoot then
         local __uaiEdits = {
-            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -125, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
+            { path = { { name = "Frame", class = "Frame", index = 1 }, { name = "QuickConfigButton", class = "TextButton", index = 1 } }, deleted = false, name = "QuickConfigButton", position = UDim2.new(1, -115, 0.5, 0), size = UDim2.new(0, 70, 0, 26), text = "Config", textSize = 11, font = "GothamMedium" },
         }
         local __uaiTargets = {}
         for editIndex, edit in ipairs(__uaiEdits) do
@@ -13670,6 +13674,24 @@ do
         end
     end
 end
+    -- Final home layout after saved designer preview overrides.
+    do
+        local home = MainFrame:FindFirstChild("HomeTab", true)
+        if home then
+            home.CanvasSize = UDim2.new(0, 0, 0, 500)
+            local roles = {}
+            for _, obj in ipairs(home:GetDescendants()) do
+                local role = obj:GetAttribute("ZXHomeCardRole")
+                if role then roles[role] = obj end
+            end
+            if roles.owner then roles.owner.Position, roles.owner.Size = UDim2.fromOffset(10, 124), UDim2.fromOffset(228, 104) end
+            if roles.server then roles.server.Position, roles.server.Size = UDim2.fromOffset(246, 124), UDim2.fromOffset(228, 104) end
+            if roles.movement then roles.movement.Position, roles.movement.Size = UDim2.fromOffset(246, 236), UDim2.fromOffset(228, 246) end
+        end
+        local topBar = MainFrame:FindFirstChild("Frame")
+        local config = topBar and topBar:FindFirstChild("QuickConfigButton")
+        if config then config.Position = UDim2.new(1, -115, 0.5, 0) end
+    end
 return Window
 end
 
